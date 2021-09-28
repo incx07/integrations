@@ -99,7 +99,8 @@ class Module(module.ModuleModel):
         add_resource_to_api(
             self.context.api, IntegrationsApi,
             '/integrations/<string:integration_name>',
-            '/integrations/<int:project_id>'
+            '/integrations/<int:project_id>',
+            '/integrations/<string:integration_name>/<int:integration_id>'
         )
 
         self.context.slot_manager.register_callback('integrations', render_integrations)

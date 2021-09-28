@@ -62,8 +62,45 @@ class IntegrationsApi(Resource, RpcMixin):
             section=integration.section
 
         )
-        print('%'*55)
-        print(db_integration)
+        # print('%'*55)
+        # print(db_integration)
         db_integration.insert()
         return IntegrationPD.from_orm(db_integration).dict()
         # return db_integration.to_json(exclude_fields=('password', ))
+
+    def put(self, integration_name: str, integration_id: int, **kwargs) -> Response:
+        print('PUT', integration_name, integration_id)
+        db_integration = Integration.query.filter(Integration.id == integration_id).first()
+        integration = self.rpc.call.integrations_get_integration(db_integration.name)
+        if not integration or not db_integration:
+            return make_response({'error': 'integration not found'}, 404)
+        try:
+            # existing_settings = integration.settings_model.parse_obj(db_integration.settings)
+            existing_settings = db_integration.settings
+            # print('EX', existing_settings)
+            # print('NEW', request.json)
+            existing_settings.update({k: v for k, v in request.json.items() if v})
+            # print('EX2', existing_settings)
+            settings = integration.settings_model.parse_obj(existing_settings)
+        except ValidationError as e:
+            return make_response(e.json(), 400)
+
+        check_connection_response = settings.check_connection()
+        if not request.json.get('save_action'):
+            return make_response(
+                jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]),
+                200 if check_connection_response else 400
+            )
+
+        # db_integration = Integration(
+        #     name=integration_name,
+        #     project_id=request.json.get('project_id'),
+        #     settings=settings.dict(),
+        #     section=integration.section
+        #
+        # )
+        # print('i'*55)
+        # print(db_integration)
+        db_integration.settings = settings
+        db_integration.insert()
+        return IntegrationPD.from_orm(db_integration).dict()
