@@ -15,7 +15,6 @@ class Integration(AbstractBaseMixin, RpcMixin, Base):
             unique=True,
             postgresql_where=Column('is_default')),  # The condition
     )
-    # API_EXCLUDE_FIELDS = ("secrets_json", "worker_pool_config_json")
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), unique=False)
@@ -23,8 +22,4 @@ class Integration(AbstractBaseMixin, RpcMixin, Base):
     settings = Column(JSON, unique=False, default={})
     is_default = Column(Boolean, default=False, nullable=False)
     section = Column(String(64), unique=False, nullable=False)
-
-    # @property
-    # def section(self):
-    #     return self.rpc.call.integrations_get_integration(self.name).section
 
