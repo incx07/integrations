@@ -50,7 +50,7 @@ class IntegrationsApi(Resource, RpcMixin):
         return make_response(jsonify([i.dict() for i in results]), 200)
 
     def post(self, integration_name: str) -> Response:
-        print('POST', integration_name)
+        print('POST', integration_name, request.json)
         integration = self.rpc.call.integrations_get_integration(integration_name)
         if not integration:
             return make_response({'error': 'integration not found'}, 404)
@@ -64,50 +64,36 @@ class IntegrationsApi(Resource, RpcMixin):
             project_id=request.json.get('project_id'),
             settings=settings.dict(),
             section=integration.section,
-            is_default=request.json.get('is_default')
+            description=request.json.get('decription'),
         )
-        # print('%'*55)
-        # print(db_integration)
         db_integration.insert()
-        return IntegrationPD.from_orm(db_integration).dict()
-        # return db_integration.to_json(exclude_fields=('password', ))
+        if request.json.get('is_default'):
+            db_integration.make_default()
+        return make_response(IntegrationPD.from_orm(db_integration).dict(), 200)
 
     def put(self, integration_name: str, integration_id: int) -> Response:
-        print('PUT', integration_name, integration_id)
+        print('PUT', integration_name, integration_id, request.json)
         db_integration = Integration.query.filter(Integration.id == integration_id).first()
         integration = self.rpc.call.integrations_get_integration(db_integration.name)
         if not integration or not db_integration:
             return make_response({'error': 'integration not found'}, 404)
         try:
-            # existing_settings = integration.settings_model.parse_obj(db_integration.settings)
             existing_settings = db_integration.settings
-            # print('EX', existing_settings)
-            # print('NEW', request.json)
             existing_settings.update({k: v for k, v in request.json.items() if v})
-            # print('EX2', existing_settings)
             settings = integration.settings_model.parse_obj(existing_settings)
         except ValidationError as e:
             return make_response(e.json(), 400)
 
-        # check_connection_response = settings.check_connection()
-        # if not request.json.get('save_action'):
-        #     return make_response(
-        #         jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]),
-        #         200 if check_connection_response else 400
-        #     )
-
-        # db_integration = Integration(
-        #     name=integration_name,
-        #     project_id=request.json.get('project_id'),
-        #     settings=settings.dict(),
-        #     section=integration.section
-        #
-        # )
-        # print('i'*55)
-        # print(db_integration)
         if request.json.get('is_default'):
-        #     db_integration.is_default = request.json.get('is_default')
             db_integration.make_default()
+
         db_integration.settings = settings.dict()
+        db_integration.description = request.json.get('description'),
         db_integration.insert()
-        return IntegrationPD.from_orm(db_integration).dict()
+        return make_response(IntegrationPD.from_orm(db_integration).dict(), 200)
+
+    def delete(self, integration_name: str, integration_id: int) -> Response:
+        Integration.query.filter(Integration.id == integration_id).first().delete()
+        # if request.json.get('is_default'):
+        #     db_integration.make_default()
+        return make_response('DELETED', 204)

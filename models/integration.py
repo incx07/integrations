@@ -22,7 +22,7 @@ class Integration(AbstractBaseMixin, RpcMixin, Base):
     settings = Column(JSON, unique=False, default={})
     is_default = Column(Boolean, default=False, nullable=False)
     section = Column(String(64), unique=False, nullable=False)
-
+    description = Column(String(256), unique=False, nullable=True, default='Default integration')
 
     def make_default(self):
         Integration.query.filter(
@@ -43,4 +43,3 @@ class Integration(AbstractBaseMixin, RpcMixin, Base):
             self.is_default = True
 
         super().insert()
-

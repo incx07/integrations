@@ -12,6 +12,7 @@ class IntegrationPD(BaseModel):
     section: str
     settings: dict
     is_default: bool
+    description: Optional[str]
 
     @validator("settings")
     def validate_date(cls, value, values):
