@@ -26,13 +26,30 @@ from ..models.integration_pd import IntegrationPD
 from ...shared.utils.rpc import RpcMixin
 
 
+class CheckSettingsApi(Resource, RpcMixin):
+    def post(self, integration_name: str) -> Response:
+        integration = self.rpc.call.integrations_get_integration(integration_name)
+        if not integration:
+            return make_response({'error': 'integration not found'}, 404)
+        try:
+            settings = integration.settings_model.parse_obj(request.json)
+        except ValidationError as e:
+            return make_response(e.json(), 400)
+
+        check_connection_response = settings.check_connection()
+        if not request.json.get('save_action'):
+            if check_connection_response:
+                return make_response('OK', 200)
+            return make_response(jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]), 400)
+
+
 class IntegrationsApi(Resource, RpcMixin):
-    def get(self, project_id: int, **kwargs) -> Response:
+    def get(self, project_id: int) -> Response:
         results = Integration.query.filter(Integration.project_id == project_id).all()
         results = parse_obj_as(List[IntegrationPD], results)
         return make_response(jsonify([i.dict() for i in results]), 200)
 
-    def post(self, integration_name: str, **kwargs) -> Response:
+    def post(self, integration_name: str) -> Response:
         print('POST', integration_name)
         integration = self.rpc.call.integrations_get_integration(integration_name)
         if not integration:
@@ -42,25 +59,12 @@ class IntegrationsApi(Resource, RpcMixin):
         except ValidationError as e:
             return make_response(e.json(), 400)
 
-
-        # print('settings', settings)
-        # print(integration)
-        #
-        # print('KSA', request.json.get('save_action'))
-        # print('request.json', request.json)
-        check_connection_response = settings.check_connection()
-        if not request.json.get('save_action'):
-            return make_response(
-                jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]),
-                200 if check_connection_response else 400
-            )
-
         db_integration = Integration(
             name=integration_name,
             project_id=request.json.get('project_id'),
             settings=settings.dict(),
-            section=integration.section
-
+            section=integration.section,
+            is_default=request.json.get('is_default')
         )
         # print('%'*55)
         # print(db_integration)
@@ -68,7 +72,7 @@ class IntegrationsApi(Resource, RpcMixin):
         return IntegrationPD.from_orm(db_integration).dict()
         # return db_integration.to_json(exclude_fields=('password', ))
 
-    def put(self, integration_name: str, integration_id: int, **kwargs) -> Response:
+    def put(self, integration_name: str, integration_id: int) -> Response:
         print('PUT', integration_name, integration_id)
         db_integration = Integration.query.filter(Integration.id == integration_id).first()
         integration = self.rpc.call.integrations_get_integration(db_integration.name)
@@ -85,12 +89,12 @@ class IntegrationsApi(Resource, RpcMixin):
         except ValidationError as e:
             return make_response(e.json(), 400)
 
-        check_connection_response = settings.check_connection()
-        if not request.json.get('save_action'):
-            return make_response(
-                jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]),
-                200 if check_connection_response else 400
-            )
+        # check_connection_response = settings.check_connection()
+        # if not request.json.get('save_action'):
+        #     return make_response(
+        #         jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]),
+        #         200 if check_connection_response else 400
+        #     )
 
         # db_integration = Integration(
         #     name=integration_name,
@@ -101,6 +105,9 @@ class IntegrationsApi(Resource, RpcMixin):
         # )
         # print('i'*55)
         # print(db_integration)
-        db_integration.settings = settings
+        if request.json.get('is_default'):
+        #     db_integration.is_default = request.json.get('is_default')
+            db_integration.make_default()
+        db_integration.settings = settings.dict()
         db_integration.insert()
         return IntegrationPD.from_orm(db_integration).dict()
