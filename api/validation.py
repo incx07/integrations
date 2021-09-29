@@ -64,7 +64,7 @@ class IntegrationsApi(Resource, RpcMixin):
             project_id=request.json.get('project_id'),
             settings=settings.dict(),
             section=integration.section,
-            description=request.json.get('decription'),
+            description=request.json.get('description'),
         )
         db_integration.insert()
         if request.json.get('is_default'):
