@@ -22,4 +22,24 @@ class Integration(AbstractBaseMixin, RpcMixin, Base):
     settings = Column(JSON, unique=False, default={})
     is_default = Column(Boolean, default=False, nullable=False)
     section = Column(String(64), unique=False, nullable=False)
+    description = Column(String(256), unique=False, nullable=True, default='Default integration')
 
+    def make_default(self):
+        Integration.query.filter(
+            Integration.project_id == self.project_id,
+            Integration.name == self.name,
+            Integration.is_default == True,
+            Integration.id != self.id
+        ).update({Integration.is_default: False})
+        self.is_default = True
+        self.insert()
+
+    def insert(self):
+        if not Integration.query.filter(
+            Integration.project_id == self.project_id,
+            Integration.name == self.name,
+            Integration.is_default == True,
+        ).one_or_none():
+            self.is_default = True
+
+        super().insert()

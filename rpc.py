@@ -1,6 +1,7 @@
 from typing import List
 
-from flask import current_app
+from sqlalchemy import desc
+
 from .models.integration import Integration
 from .models.integration_pd import IntegrationPD
 from .models.registration_pd import RegistrationForm
@@ -27,7 +28,7 @@ def get_project_integrations(project_id):
     results = Integration.query.filter(Integration.project_id == project_id).group_by(
         Integration.section,
         Integration.id
-    ).all()
+    ).order_by(desc(Integration.is_default), desc(Integration.id)).all()
     results = parse_obj_as(List[IntegrationPD], results)
 
     def reducer(cumulative, new_value):
