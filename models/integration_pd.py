@@ -15,10 +15,13 @@ class IntegrationPD(BaseModel):
     description: Optional[str]
 
     @validator("settings")
-    def validate_date(cls, value, values):
-        return current_app.config['CONTEXT'].rpc_manager.call.integrations_get_integration(
-            values['name']
-        ).settings_model.parse_obj(value).dict(exclude={'password'})
+    def validate_settings(cls, value, values):
+        try:
+            return current_app.config['CONTEXT'].rpc_manager.call.integrations_get_integration(
+                values['name']
+            ).settings_model.parse_obj(value).dict(exclude={'password'})
+        except AttributeError:
+            return
 
     class Config:
         orm_mode = True
