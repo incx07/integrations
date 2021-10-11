@@ -112,10 +112,6 @@ class Module(module.ModuleModel):
                 return True
             except (TypeError, OverflowError):
                 return False
-        # return {k: v.json() for k, v in self.integrations.items()}
-        # response = make_response(json.dumps(self.integrations, indent=2, default=lambda o: o.json(indent=2, default=lambda o: str(type(o)))), 200)
-        # print(str({k: v.dict(by_alias=True) for k, v in self.integrations.items()}))
-        # response = make_response({k: v.dict(exclude={'integration_callback', 'settings_model'}) for k, v in self.integrations.items()}, 200)
         response = make_response({k: {
                 kk: vv if is_serializable(vv) else str(vv)
                 for kk, vv in v.dict().items()
