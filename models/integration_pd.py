@@ -1,5 +1,6 @@
-from typing import Dict, Optional, Any, Callable
+from typing import Optional
 
+from arbiter.log import log
 from flask import current_app
 
 from pydantic import BaseModel, validator
@@ -15,10 +16,14 @@ class IntegrationPD(BaseModel):
     description: Optional[str]
 
     @validator("settings")
-    def validate_date(cls, value, values):
-        return current_app.config['CONTEXT'].rpc_manager.call.integrations_get_integration(
+    def validate_settings(cls, value, values):
+        integration = current_app.config['CONTEXT'].rpc_manager.call.integrations_get_integration(
             values['name']
-        ).settings_model.parse_obj(value).dict(exclude={'password'})
+        )
+        if not integration:
+            log('Integration %s was not found', values['name'])
+            return dict()
+        return integration.settings_model.parse_obj(value).dict(exclude={'password'})
 
     class Config:
         orm_mode = True

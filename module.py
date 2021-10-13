@@ -67,11 +67,11 @@ class Module(module.ModuleModel):
             name=f'{self.rpc_prefix}_sections'
         )
         self.context.rpc_manager.register_function(
-            get_project_integrations,
+            partial(get_project_integrations, registered_integrations=self.integrations.keys()),
             name=f'{self.rpc_prefix}_get_project_integrations'
         )
         self.context.rpc_manager.register_function(
-            get_project_integrations_by_name,
+            partial(get_project_integrations_by_name, registered_integrations=self.integrations.keys()),
             name=f'{self.rpc_prefix}_get_project_integrations_by_name'
         )
 
