@@ -13,7 +13,8 @@ class Integration(AbstractBaseMixin, RpcMixin, Base):
             'ix_project_default_uc',  # Index name
             'project_id', 'name',  # Columns which are part of the index
             unique=True,
-            postgresql_where=Column('is_default')),  # The condition
+            postgresql_where=Column('is_default')  # The condition
+        ),
     )
 
     id = Column(Integer, primary_key=True)

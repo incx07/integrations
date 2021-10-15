@@ -28,10 +28,12 @@ from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
 from .api.validation import IntegrationsApi, CheckSettingsApi
 from .components.integrations_list import render_integrations
+from .components.security import create
 from .init_db import init_db
-from .rpc import register, get_integration, get_project_integrations, \
-    get_project_integrations_by_name
+from .rpc import register, get_project_integrations, \
+    get_project_integrations_by_name, register_section
 from ..shared.utils.api_utils import add_resource_to_api
+from ..shared.utils.rpc import RpcMixin
 
 
 class Module(module.ModuleModel):
@@ -42,7 +44,9 @@ class Module(module.ModuleModel):
         self.root_path = root_path
         self.context = context
         self.rpc_prefix = 'integrations'
+
         self.integrations = dict()
+        self.sections = dict()
 
     def init(self):
         """ Init module """
@@ -50,29 +54,41 @@ class Module(module.ModuleModel):
         init_db()
 
         # RPC
+        RpcMixin.set_rpc_manager(self.context.rpc_manager)
+
         self.context.rpc_manager.register_function(
             partial(register, self.integrations, self.context.slot_manager),
-            name=f'{self.rpc_prefix}_register'
+            name='_'.join([self.rpc_prefix, 'register'])
         )
         self.context.rpc_manager.register_function(
-            partial(get_integration, self.integrations),
-            name=f'{self.rpc_prefix}_get_integration'
+            lambda integration_name: self.integrations.get(integration_name),
+            name='_'.join([self.rpc_prefix, 'get_integration'])
         )
         self.context.rpc_manager.register_function(
             lambda: self.integrations,
-            name=f'{self.rpc_prefix}_list'
-        )
-        self.context.rpc_manager.register_function(
-            lambda: set((i.section for i in self.integrations.values())),
-            name=f'{self.rpc_prefix}_sections'
+            name='_'.join([self.rpc_prefix, 'list'])
         )
         self.context.rpc_manager.register_function(
             partial(get_project_integrations, registered_integrations=self.integrations.keys()),
-            name=f'{self.rpc_prefix}_get_project_integrations'
+            name='_'.join([self.rpc_prefix, 'get_project_integrations'])
         )
         self.context.rpc_manager.register_function(
             partial(get_project_integrations_by_name, registered_integrations=self.integrations.keys()),
-            name=f'{self.rpc_prefix}_get_project_integrations_by_name'
+            name='_'.join([self.rpc_prefix, 'get_project_integrations_by_name'])
+        )
+
+        self.context.rpc_manager.register_function(
+            partial(register_section, reg_dict_section=self.sections),
+            name='_'.join([self.rpc_prefix, 'register_section'])
+        )
+        self.context.rpc_manager.register_function(
+            lambda section_name: self.sections.get(section_name),
+            name='_'.join([self.rpc_prefix, 'get_section'])
+        )
+        self.context.rpc_manager.register_function(
+            # lambda: set((i.section for i in self.integrations.values())),
+            lambda: self.sections.values(),
+            name='_'.join([self.rpc_prefix, 'section_list'])
         )
 
         # blueprint endpoints
@@ -101,6 +117,9 @@ class Module(module.ModuleModel):
 
         # SLOTS
         self.context.slot_manager.register_callback('integrations', render_integrations)
+        self.context.slot_manager.register_callback('integrations_security_create', create)
+
+
 
     def get_registered(self):
         from ..shared.connectors.auth import SessionProject
@@ -112,20 +131,24 @@ class Module(module.ModuleModel):
                 return True
             except (TypeError, OverflowError):
                 return False
-        # return {k: v.json() for k, v in self.integrations.items()}
-        # response = make_response(json.dumps(self.integrations, indent=2, default=lambda o: o.json(indent=2, default=lambda o: str(type(o)))), 200)
-        # print(str({k: v.dict(by_alias=True) for k, v in self.integrations.items()}))
-        # response = make_response({k: v.dict(exclude={'integration_callback', 'settings_model'}) for k, v in self.integrations.items()}, 200)
-        response = make_response({k: {
+
+        serialize = lambda d: {k: {
                 kk: vv if is_serializable(vv) else str(vv)
                 for kk, vv in v.dict().items()
-            } for k, v in self.integrations.items()
+            } for k, v in d.items()
+        }
+
+        integrations = serialize(self.integrations)
+
+        sections = serialize(self.sections)
+
+
+        response = make_response({
+            'sections': sections,
+            'integrations': integrations
         }, 200)
         response.headers['Content-Type'] = 'application/json'
 
-        print('test rpc')
-        print(self.context.rpc_manager.call.integrations_list())
-        print(self.context.rpc_manager.call.integrations_sections())
 
         return response
 
