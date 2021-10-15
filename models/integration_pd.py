@@ -36,5 +36,6 @@ class IntegrationPD(BaseModel):
             return value
         return section
 
+
     class Config:
         orm_mode = True
