@@ -1,27 +1,41 @@
-from typing import Dict, Optional, Any, Callable
+from typing import Optional, Union
 
+from arbiter.log import log
 from flask import current_app
 
 from pydantic import BaseModel, validator
+
+from .registration_pd import SectionRegistrationForm
+from ...shared.utils.rpc import RpcMixin
 
 
 class IntegrationPD(BaseModel):
 
     id: int
     name: str
-    section: str
+    section: Union[str, SectionRegistrationForm]
     settings: dict
     is_default: bool
     description: Optional[str]
 
     @validator("settings")
     def validate_settings(cls, value, values):
-        try:
-            return current_app.config['CONTEXT'].rpc_manager.call.integrations_get_integration(
-                values['name']
-            ).settings_model.parse_obj(value).dict(exclude={'password'})
-        except AttributeError:
-            return
+        integration = RpcMixin().rpc.call.integrations_get_integration(
+            values['name']
+        )
+        if not integration:
+            log('Integration %s was not found', values['name'])
+            return dict()
+        return integration.settings_model.parse_obj(value).dict(exclude={'password'})
+
+    @validator("section")
+    def validate_section(cls, value, values):
+        section = RpcMixin().rpc.call.integrations_get_section(value)
+        if not section:
+            log('Integration section %s was not found', value)
+            return value
+        return section
+
 
     class Config:
         orm_mode = True
