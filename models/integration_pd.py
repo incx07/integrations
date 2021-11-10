@@ -1,7 +1,6 @@
 from typing import Optional, Union
 
 from arbiter.log import log
-from flask import current_app
 
 from pydantic import BaseModel, validator
 
@@ -35,7 +34,6 @@ class IntegrationPD(BaseModel):
             log('Integration section %s was not found', value)
             return value
         return section
-
 
     class Config:
         orm_mode = True

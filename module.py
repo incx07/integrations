@@ -120,7 +120,6 @@ class Module(module.ModuleModel):
         self.context.slot_manager.register_callback('integrations_security_create', create)
 
 
-
     def get_registered(self):
         from ..shared.connectors.auth import SessionProject
         SessionProject.set(1)
