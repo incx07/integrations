@@ -32,7 +32,7 @@ class IntegrationPD(BaseModel):
         section = RpcMixin().rpc.call.integrations_get_section(value)
         if not section:
             log('Integration section %s was not found', value)
-            return value
+            return RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
     class Config:
