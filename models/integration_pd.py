@@ -25,7 +25,7 @@ class IntegrationPD(BaseModel):
         if not integration:
             log('Integration %s was not found', values['name'])
             return dict()
-        return integration.settings_model.parse_obj(value).dict(exclude={'password'})
+        return integration.settings_model.parse_obj(value).dict(exclude={'password', 'passwd'})
 
     @validator("section")
     def validate_section(cls, value, values):
