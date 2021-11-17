@@ -63,3 +63,9 @@ def register_section(reg_dict_section: dict, *, force_overwrite: bool = False, *
     if form_data.name not in reg_dict_section or force_overwrite:
         reg_dict_section[form_data.name] = form_data
     return form_data
+
+
+def get_by_id(integration_id: int) -> Integration:
+    return Integration.query.filter(
+        Integration.id == integration_id,
+    ).one_or_none()

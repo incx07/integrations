@@ -7,7 +7,6 @@ from sqlalchemy.dialects.postgresql import JSON
 
 class Integration(AbstractBaseMixin, RpcMixin, Base):
     __tablename__ = "integration"
-    # __table_args__ = (UniqueConstraint('project_id', 'is_default', 'name', name='_project_default_uc'),)
     __table_args__ = (
         Index(
             'ix_project_default_uc',  # Index name

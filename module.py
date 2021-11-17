@@ -31,7 +31,7 @@ from .components.integrations_list import render_integrations
 from .components.security import create
 from .init_db import init_db
 from .rpc import register, get_project_integrations, \
-    get_project_integrations_by_name, register_section
+    get_project_integrations_by_name, register_section, get_by_id
 from ..shared.utils.api_utils import add_resource_to_api
 from ..shared.utils.rpc import RpcMixin
 
@@ -90,6 +90,10 @@ class Module(module.ModuleModel):
             lambda: self.sections.values(),
             name='_'.join([self.rpc_prefix, 'section_list'])
         )
+        self.context.rpc_manager.register_function(
+            get_by_id,
+            name='_'.join([self.rpc_prefix, 'get_by_id'])
+        )
 
         # blueprint endpoints
         bp = flask.Blueprint(
@@ -101,6 +105,7 @@ class Module(module.ModuleModel):
             jinja2.loaders.PackageLoader("plugins.integrations", "templates"),
         ])
         bp.add_url_rule('/', 'get_registered', self.get_registered, methods=['GET'])
+        bp.add_url_rule('/dusty', 'get_dusty_configs', self.get_dusty_configs, methods=['GET'])
         self.context.app.register_blueprint(bp)
 
         # API
@@ -122,7 +127,7 @@ class Module(module.ModuleModel):
 
     def get_registered(self):
         from ..shared.connectors.auth import SessionProject
-        SessionProject.set(1)
+        SessionProject.set(12)
 
         def is_serializable(item):
             try:
@@ -148,7 +153,41 @@ class Module(module.ModuleModel):
         }, 200)
         response.headers['Content-Type'] = 'application/json'
 
+        return response
 
+    def get_dusty_configs(self):
+        from ..shared.connectors.auth import SessionProject
+        project_id = SessionProject.get()
+        from plugins.security.models.api_tests import SecurityTestsDAST
+        from sqlalchemy import desc
+        res = SecurityTestsDAST.query.filter(
+            SecurityTestsDAST.id == 6,
+        ).first()
+        print(res)
+        reporters_config = dict()
+        from queue import Empty
+        for reporter_name in res.integrations.get('reporters', []):
+            try:
+                reporters_config[reporter_name] = self.context.rpc_manager.call_function_with_timeout(
+                    func=f'dusty_config_{reporter_name}',
+                    timeout=3,
+                    test_params=res.__dict__,
+                    scanner_params=res.integrations["reporters"][reporter_name],
+                )
+            except Empty:
+                pass
+        scanners_config = dict()
+        for scanner_name in res.integrations.get('scanners', []):
+            try:
+                scanners_config[scanner_name] = self.context.rpc_manager.call_function_with_timeout(
+                    func=f'dusty_config_{scanner_name}',
+                    timeout=3,
+                    test_params=res.__dict__,
+                    scanner_params=res.integrations["scanners"][scanner_name],
+                )
+            except Empty:
+                pass
+        response = make_response({'r': reporters_config, 's': scanners_config, 'i': res.integrations}, 200)
         return response
 
 
