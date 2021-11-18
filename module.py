@@ -104,8 +104,6 @@ class Module(module.ModuleModel):
         bp.jinja_loader = jinja2.ChoiceLoader([
             jinja2.loaders.PackageLoader("plugins.integrations", "templates"),
         ])
-        bp.add_url_rule('/', 'get_registered', self.get_registered, methods=['GET'])
-        bp.add_url_rule('/dusty', 'get_dusty_configs', self.get_dusty_configs, methods=['GET'])
         self.context.app.register_blueprint(bp)
 
         # API
