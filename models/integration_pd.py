@@ -35,5 +35,11 @@ class IntegrationPD(BaseModel):
             return RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
+    @validator("description")
+    def validate_description(cls, value, values):
+        if not value:
+            return f'Integration #{values["id"]}'
+        return value
+
     class Config:
         orm_mode = True
