@@ -50,7 +50,9 @@ class IntegrationsApi(Resource, RpcMixin):
         return make_response(jsonify([i.dict() for i in results]), 200)
 
     def post(self, integration_name: str) -> Response:
-        print('POST', integration_name, request.json)
+        project_id = request.json.get('project_id')
+        if not project_id:
+            return make_response({'error': 'project_id not provided'}, 400)
         integration = self.rpc.call.integrations_get_integration(integration_name)
         if not integration:
             return make_response({'error': 'integration not found'}, 404)

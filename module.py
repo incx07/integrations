@@ -31,7 +31,7 @@ from .components.integrations_list import render_integrations
 from .components.security import create
 from .init_db import init_db
 from .rpc import register, get_project_integrations, \
-    get_project_integrations_by_name, register_section
+    get_project_integrations_by_name, register_section, get_by_id
 from ..shared.utils.api_utils import add_resource_to_api
 from ..shared.utils.rpc import RpcMixin
 
@@ -90,6 +90,10 @@ class Module(module.ModuleModel):
             lambda: self.sections.values(),
             name='_'.join([self.rpc_prefix, 'section_list'])
         )
+        self.context.rpc_manager.register_function(
+            get_by_id,
+            name='_'.join([self.rpc_prefix, 'get_by_id'])
+        )
 
         # blueprint endpoints
         bp = flask.Blueprint(
@@ -100,7 +104,6 @@ class Module(module.ModuleModel):
         bp.jinja_loader = jinja2.ChoiceLoader([
             jinja2.loaders.PackageLoader("plugins.integrations", "templates"),
         ])
-        bp.add_url_rule('/', 'get_registered', self.get_registered, methods=['GET'])
         self.context.app.register_blueprint(bp)
 
         # API
@@ -118,39 +121,6 @@ class Module(module.ModuleModel):
         # SLOTS
         self.context.slot_manager.register_callback('integrations', render_integrations)
         self.context.slot_manager.register_callback('integrations_security_create', create)
-
-
-
-    def get_registered(self):
-        from ..shared.connectors.auth import SessionProject
-        SessionProject.set(1)
-
-        def is_serializable(item):
-            try:
-                json.dumps(item)
-                return True
-            except (TypeError, OverflowError):
-                return False
-
-        serialize = lambda d: {k: {
-                kk: vv if is_serializable(vv) else str(vv)
-                for kk, vv in v.dict().items()
-            } for k, v in d.items()
-        }
-
-        integrations = serialize(self.integrations)
-
-        sections = serialize(self.sections)
-
-
-        response = make_response({
-            'sections': sections,
-            'integrations': integrations
-        }, 200)
-        response.headers['Content-Type'] = 'application/json'
-
-
-        return response
 
 
     def deinit(self):  # pylint: disable=R0201
