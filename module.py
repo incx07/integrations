@@ -39,10 +39,9 @@ from ..shared.utils.rpc import RpcMixin
 class Module(module.ModuleModel):
     """ Pylon module """
 
-    def __init__(self, settings, root_path, context):
-        self.settings = settings
-        self.root_path = root_path
+    def __init__(self, context, descriptor):
         self.context = context
+        self.descriptor = descriptor
         self.rpc_prefix = 'integrations'
 
         self.integrations = dict()
@@ -96,15 +95,7 @@ class Module(module.ModuleModel):
         )
 
         # blueprint endpoints
-        bp = flask.Blueprint(
-            'integrations', 'plugins.integrations',
-            root_path=self.root_path,
-            url_prefix=f'{self.context.url_prefix}/integr'
-        )
-        bp.jinja_loader = jinja2.ChoiceLoader([
-            jinja2.loaders.PackageLoader("plugins.integrations", "templates"),
-        ])
-        self.context.app.register_blueprint(bp)
+        bp = self.descriptor.init_blueprint()
 
         # API
         add_resource_to_api(
