@@ -22,7 +22,7 @@ class RegistrationForm(BaseModel):
     name: str
     section: str  # we manually manage relationships
     settings_model: Optional[ModelMetaclass]
-    integration_callback: Optional[Callable]
+    integration_callback: Optional[Callable] = lambda context, slot, payload: None
 
     @validator('name')
     def name_validator(cls, value, values):

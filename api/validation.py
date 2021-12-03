@@ -80,9 +80,10 @@ class IntegrationsApi(Resource, RpcMixin):
         if not integration or not db_integration:
             return make_response({'error': 'integration not found'}, 404)
         try:
-            existing_settings = db_integration.settings
-            existing_settings.update({k: v for k, v in request.json.items() if v})
-            settings = integration.settings_model.parse_obj(existing_settings)
+            # existing_settings = db_integration.settings
+            # existing_settings.update({k: v for k, v in request.json.items()})
+            # settings = integration.settings_model.parse_obj(existing_settings)
+            settings = integration.settings_model.parse_obj(request.json)
         except ValidationError as e:
             return make_response(e.json(), 400)
 
