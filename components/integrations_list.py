@@ -8,6 +8,6 @@ def render_integrations(context, slot, payload):
     payload['integrations_section_list'] = context.rpc_manager.call.integrations_section_list()
 
     return render_template(
-        'integrations_list.html',
+        'integrations:integrations_list.html',
         config=payload
     )

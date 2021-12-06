@@ -50,7 +50,9 @@ class IntegrationsApi(Resource, RpcMixin):
         return make_response(jsonify([i.dict() for i in results]), 200)
 
     def post(self, integration_name: str) -> Response:
-        print('POST', integration_name, request.json)
+        project_id = request.json.get('project_id')
+        if not project_id:
+            return make_response({'error': 'project_id not provided'}, 400)
         integration = self.rpc.call.integrations_get_integration(integration_name)
         if not integration:
             return make_response({'error': 'integration not found'}, 404)
@@ -78,9 +80,10 @@ class IntegrationsApi(Resource, RpcMixin):
         if not integration or not db_integration:
             return make_response({'error': 'integration not found'}, 404)
         try:
-            existing_settings = db_integration.settings
-            existing_settings.update({k: v for k, v in request.json.items() if v})
-            settings = integration.settings_model.parse_obj(existing_settings)
+            # existing_settings = db_integration.settings
+            # existing_settings.update({k: v for k, v in request.json.items()})
+            # settings = integration.settings_model.parse_obj(existing_settings)
+            settings = integration.settings_model.parse_obj(request.json)
         except ValidationError as e:
             return make_response(e.json(), 400)
 

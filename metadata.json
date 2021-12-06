@@ -1,8 +1,5 @@
 {
   "name": "Integrations plugin",
   "version": "0.1",
-  "module": "plugins.integrations",
-  "extract": false,
-  "depends_on": ["shared"],
-  "init_after": []
+  "depends_on": ["shared"]
 }

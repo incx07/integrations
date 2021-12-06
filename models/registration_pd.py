@@ -21,8 +21,8 @@ class SectionRegistrationForm(BaseModel):
 class RegistrationForm(BaseModel):
     name: str
     section: str  # we manually manage relationships
-    settings_model: ModelMetaclass
-    integration_callback: Callable
+    settings_model: Optional[ModelMetaclass]
+    integration_callback: Optional[Callable] = lambda context, slot, payload: None
 
     @validator('name')
     def name_validator(cls, value, values):
@@ -34,8 +34,6 @@ class RegistrationForm(BaseModel):
         if not section:
             if isinstance(value, str):
                 section = RpcMixin().rpc.call.integrations_register_section(name=value)
-            # elif isinstance(value, SectionRegistrationForm):
-            #     section = cls.rpc.call.integrations_register_section(value.dict())
             else:
                 section = RpcMixin().rpc.call.integrations_register_section(**value)
 
@@ -45,6 +43,3 @@ class RegistrationForm(BaseModel):
         json_encoders = {
             ModelMetaclass: lambda v: str(type(v)),
         }
-
-    def get_section(self):
-        self.rpc.call.integrations_get_section(self.section)

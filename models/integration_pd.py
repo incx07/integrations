@@ -1,7 +1,6 @@
 from typing import Optional, Union
 
 from arbiter.log import log
-from flask import current_app
 
 from pydantic import BaseModel, validator
 
@@ -26,16 +25,21 @@ class IntegrationPD(BaseModel):
         if not integration:
             log('Integration %s was not found', values['name'])
             return dict()
-        return integration.settings_model.parse_obj(value).dict(exclude={'password'})
+        return integration.settings_model.parse_obj(value).dict(exclude={'password', 'passwd'})
 
     @validator("section")
     def validate_section(cls, value, values):
         section = RpcMixin().rpc.call.integrations_get_section(value)
         if not section:
             log('Integration section %s was not found', value)
-            return value
+            return RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
+    @validator("description")
+    def validate_description(cls, value, values):
+        if not value:
+            return f'Integration #{values["id"]}'
+        return value
 
     class Config:
         orm_mode = True
