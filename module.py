@@ -16,12 +16,7 @@
 #   limitations under the License.
 
 """ Module """
-import json
 from functools import partial
-
-import flask  # pylint: disable=E0401
-import jinja2  # pylint: disable=E0401
-from flask import request, make_response, session, redirect, Response
 
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import module  # pylint: disable=E0611,E0401
