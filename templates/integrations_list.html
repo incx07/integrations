@@ -1,18 +1,19 @@
-<link rel="stylesheet" href="{{ url_for('theme.static', filename='css/integrations.css') }}" />
+<link rel="stylesheet" href="{{ url_for('integrations.static', filename='css/integrations.css') }}" />
 {% for section in config['integrations_section_list'] %}
-    <div class="row">
+    {% set section_integrations = config['existing_integrations'].get(section.name, []) %}
+    <div class="row section_row">
         <div class="card card-x shadow-none">
             <div class="card-header">
                 <h3 style="text-transform: capitalize">{{ section.name }}</h3>
                 <h9>{{ section.integration_description }}</h9>
             </div>
             <div class="card-body">
-                <div class="row d-flex">
-                    {% for i in config['existing_integrations'].get(section.name, []) %}
+                <div class="row d-flex section_cards">
+                    {% for i in section_integrations %}
                         {{ template_slot("integration_card_%s" | format(i.name), payload=i) | safe }}
                     {% endfor %}
                 </div>
-                <div class="row d-flex mt-5">
+                <div class="row d-flex mt-5 section_create">
                     {{ template_slot("integrations_%s" | format(section.name), payload=config) | safe }}
                 </div>
             </div>
