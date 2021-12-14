@@ -11,3 +11,9 @@ def render_integrations(context, slot, payload):
         'integrations:integrations_list.html',
         config=payload
     )
+
+def render_default_add_button(context, slot, payload):
+    return render_template(
+        'integrations:default_add_button.html',
+        config=payload
+    )

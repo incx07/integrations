@@ -31,3 +31,7 @@
 .section_create {
     margin-left: auto;
 }
+
+.modal-body > .form-group {
+    padding-right: 10px;
+}
