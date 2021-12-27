@@ -22,21 +22,24 @@ $(document).ready(() => {
             }, {})
         ),
         set: values => {
-            console.log('SET integrations', values)
-            // {
-            //     scanners: {
-            //         qualys:
-            //         {
-            //             id: "44"
-            //         }
-            //     }
-            // }
-            Object.keys(values).forEach(section => {
-                Object.keys(values[section]).forEach(integrationItem => {
-                    const dataCallbackName = `${section}_${integrationItem}`
-                    window[dataCallbackName]?.set_data(values[section][integrationItem])
+            if (values) {
+                console.log('SET integrations', values)
+                // {
+                //     scanners: {
+                //         qualys:
+                //         {
+                //             id: "44"
+                //         }
+                //     }
+                // }
+                Object.keys(values).forEach(section => {
+                    Object.keys(values[section]).forEach(integrationItem => {
+                        const dataCallbackName = `${section}_${integrationItem}`
+                        window[dataCallbackName]?.set_data(values[section][integrationItem])
+                    })
                 })
-            })
+            }
+
         },
         clear: () => (
             $('.integration_section').toArray().forEach(item => {
