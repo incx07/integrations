@@ -52,6 +52,23 @@ $(document).ready(() => {
                 })
             })
         ),
+        setError: data => {
+            console.log(data)
+            const [dataCallbackName, ...rest] = data.loc
+            data.loc = rest
+            window[dataCallbackName]?.set_error(data)
+        },
+        clearErrors: () => {
+            $('.integration_section').toArray().forEach(item => {
+                const sectionElement = $(item)
+                const sectionName = sectionElement.find('.integration_section_name').text().toLowerCase().replace(' ', '_')
+                sectionElement.find('.security_integration_item').toArray().forEach(i => {
+                    const integrationName = $(i).attr('data-name')
+                    const dataCallbackName = `${sectionName}_${integrationName}`
+                    window[dataCallbackName]?.clear_errors && window[dataCallbackName]?.clear_errors()
+                })
+            })
+        },
         default: {}
     }).register()
 })

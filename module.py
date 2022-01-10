@@ -26,7 +26,7 @@ from .components.integrations_list import render_integrations, render_default_ad
 from .components.security import create
 from .init_db import init_db
 from .rpc import register, get_project_integrations, \
-    get_project_integrations_by_name, register_section, get_by_id
+    get_project_integrations_by_name, register_section, get_by_id, security_test_create
 from ..shared.utils.api_utils import add_resource_to_api
 from ..shared.utils.rpc import RpcMixin
 
@@ -88,9 +88,13 @@ class Module(module.ModuleModel):
             get_by_id,
             name='_'.join([self.rpc_prefix, 'get_by_id'])
         )
+        self.context.rpc_manager.register_function(
+            security_test_create,
+            name='_'.join(['security_test_create', self.rpc_prefix])
+        )
 
         # blueprint endpoints
-        bp = self.descriptor.init_blueprint()
+        self.descriptor.init_blueprint()
 
         # API
         add_resource_to_api(
@@ -105,9 +109,9 @@ class Module(module.ModuleModel):
         )
 
         # SLOTS
-        self.context.slot_manager.register_callback('integrations', render_integrations)
-        self.context.slot_manager.register_callback('integrations_security_create', create)
-        self.context.slot_manager.register_callback('integrations_default_add_button', render_default_add_button)
+        self.context.slot_manager.register_callback(self.rpc_prefix, render_integrations)
+        self.context.slot_manager.register_callback(f'{self.rpc_prefix}_security_create', create)
+        self.context.slot_manager.register_callback(f'{self.rpc_prefix}_default_add_button', render_default_add_button)
 
 
     def deinit(self):  # pylint: disable=R0201

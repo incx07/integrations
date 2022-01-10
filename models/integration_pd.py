@@ -1,8 +1,7 @@
 from typing import Optional, Union
 
-from arbiter.log import log
-
 from pydantic import BaseModel, validator
+from pylon.core.tools.log import log
 
 from .registration_pd import SectionRegistrationForm
 from ...shared.utils.rpc import RpcMixin
