@@ -22,7 +22,7 @@ from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
 from .api.validation import IntegrationsApi, CheckSettingsApi
-from .components.integrations_list import render_integrations
+from .components.integrations_list import render_integrations, render_default_add_button
 from .components.security import create
 from .init_db import init_db
 from .rpc import register, get_project_integrations, \
@@ -107,6 +107,7 @@ class Module(module.ModuleModel):
         # SLOTS
         self.context.slot_manager.register_callback('integrations', render_integrations)
         self.context.slot_manager.register_callback('integrations_security_create', create)
+        self.context.slot_manager.register_callback('integrations_default_add_button', render_default_add_button)
 
 
     def deinit(self):  # pylint: disable=R0201

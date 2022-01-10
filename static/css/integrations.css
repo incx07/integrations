@@ -1,6 +1,12 @@
 .integration_card {
-    width: 333px;
+    width: 340px;
     height: 104px;
+}
+
+.integration_card .badge {
+    background-color: white;
+    border: 1px solid;
+    color: var(--basic);
 }
 
 .integration_description {
@@ -15,4 +21,17 @@
     border-radius: 50%;
     border: 10px solid #2BD48D;
     color: #fff;
+}
+
+.integration_add {
+    border: 1px solid;
+    justify-content: space-around;
+}
+
+.section_create {
+    margin-left: auto;
+}
+
+.modal-body > .form-group {
+    padding-right: 10px;
 }
