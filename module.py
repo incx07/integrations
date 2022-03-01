@@ -18,7 +18,7 @@
 """ Module """
 from functools import partial
 
-from pylon.core.tools import log  # pylint: disable=E0611,E0401
+from pylon.core.tools import log, web  # pylint: disable=E0611,E0401
 from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
 from .api.validation import IntegrationsApi, CheckSettingsApi
@@ -27,8 +27,8 @@ from .components.security import create
 from .init_db import init_db
 from .rpc import register, get_project_integrations, \
     get_project_integrations_by_name, register_section, get_by_id, security_test_create
+
 from ..shared.utils.api_utils import add_resource_to_api
-from ..shared.utils.rpc import RpcMixin
 
 
 class Module(module.ModuleModel):
@@ -47,9 +47,20 @@ class Module(module.ModuleModel):
         log.info('Initializing module integrations')
         init_db()
 
-        # RPC
-        RpcMixin.set_rpc_manager(self.context.rpc_manager)
+        # blueprint endpoints
+        self.descriptor.init_blueprint()
 
+        self.init_rpc()
+        self.init_api()
+        self.init_slots()
+
+        self.context.rpc_manager.register_function(
+            partial(render_integrations, context=self.context, slot=None, payload={}),
+            name='configuration_integrations',
+        )
+
+    def init_rpc(self):
+        # RPC
         self.context.rpc_manager.register_function(
             partial(register, self.integrations, self.context.slot_manager),
             name='_'.join([self.rpc_prefix, 'register'])
@@ -93,10 +104,7 @@ class Module(module.ModuleModel):
             name='_'.join(['security_test_create', self.rpc_prefix])
         )
 
-        # blueprint endpoints
-        self.descriptor.init_blueprint()
-
-        # API
+    def init_api(self):
         add_resource_to_api(
             self.context.api, IntegrationsApi,
             '/integrations/<int:project_id>',
@@ -108,13 +116,22 @@ class Module(module.ModuleModel):
             '/integrations/<string:integration_name>/check_settings',
         )
 
-        # SLOTS
+    def init_slots(self):
         self.context.slot_manager.register_callback(self.rpc_prefix, render_integrations)
         self.context.slot_manager.register_callback(f'{self.rpc_prefix}_security_create', create)
         self.context.slot_manager.register_callback(f'{self.rpc_prefix}_default_add_button', render_default_add_button)
+
 
 
     def deinit(self):  # pylint: disable=R0201
         """ De-init module """
         log.info('De-initializing module integrations')
         self.integrations = dict()
+
+    # @web.route('/')
+    # def configuration(self):
+    #     from flask import render_template
+    #     return render_template(
+    #         'theme:base.html',
+    #         page_content='<div>THIS IS THE TEST</div>'
+    #     )

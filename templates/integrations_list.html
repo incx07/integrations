@@ -1,22 +1,39 @@
-<link rel="stylesheet" href="{{ url_for('integrations.static', filename='css/integrations.css') }}" />
-{% for section in config['integrations_section_list'] %}
-    {% set section_integrations = config['existing_integrations'].get(section.name, []) %}
-    <div class="row section_row">
-        <div class="card card-x shadow-none">
-            <div class="card-header">
-                <h3 style="text-transform: capitalize">{{ section.name }}</h3>
-                <h9>{{ section.integration_description }}</h9>
-            </div>
-            <div class="card-body">
-                <div class="row d-flex section_cards">
-                    {% for i in section_integrations %}
-                        {{ template_slot("integration_card_%s" | format(i.name), payload=i) | safe }}
-                    {% endfor %}
+<link rel="stylesheet" href="{{ url_for('integrations.static', filename='css/integrations.css') }}"/>
+<div class="card card-12">
+    <div class="card-body">
+        <div class="row border-bottom">
+            <div class="card card-x shadow-none">
+                <div class="card-header">
+                    <h1>Integrations</h1>
+                    <h9>Some description</h9>
                 </div>
-                <div class="row d-flex mt-3 section_create">
-                    {{ template_slot("integrations_%s" | format(section.name), payload=config) | safe }}
+                <div class="card-body">
+                    <h13>
+
+                    </h13>
                 </div>
             </div>
         </div>
+        {% for section in config['integrations_section_list'] %}
+            {% set section_integrations = config['existing_integrations'].get(section.name, []) %}
+            <div class="row section_row">
+                <div class="card card-x shadow-none">
+                    <div class="card-header">
+                        <h3 style="text-transform: capitalize">{{ section.name }}</h3>
+                        <h9>{{ section.integration_description }}</h9>
+                    </div>
+                    <div class="card-body">
+                        <div class="row d-flex section_cards">
+                            {% for i in section_integrations %}
+                                {{ template_slot("integration_card_%s" | format(i.name), payload=i) | safe }}
+                            {% endfor %}
+                        </div>
+                        <div class="row d-flex mt-3 section_create">
+                            {{ template_slot("integrations_%s" | format(section.name), payload=config) | safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-{% endfor %}
+</div>
