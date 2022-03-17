@@ -4,6 +4,7 @@ from pydantic import parse_obj_as, ValidationError
 from functools import reduce
 from collections import defaultdict
 from sqlalchemy import desc, asc
+from pylon.core.tools import log
 
 from .models.integration import Integration
 from .models.integration_pd import IntegrationPD
@@ -74,7 +75,7 @@ def get_by_id(integration_id: int) -> Integration:
 
 def security_test_create(data: dict, skip_validation_if_undefined: bool = True, **kwargs) -> dict:
     integration_data = dict()
-    from pylon.core.tools import log
+
     rpc = RpcMixin().rpc
     # log.warning(data)
     for section, integration in data.items():
