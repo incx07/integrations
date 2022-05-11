@@ -1,4 +1,4 @@
-{% for section in config['integrations_section_list'] %}
+{% for section in integrations_section_list | default([]) %}
     <div class="section integration_section">
         <div class="row">
             <div class="col">

@@ -1,0 +1,9 @@
+{% set integration_name = config['integration_name'] %}
+{% set display_name = config['display_name'] %}
+{% set logo = config['logo'] | default('') %}
+
+<add-integration-button
+    integration_name="{{ integration_name }}"
+    display_name="{{ display_name }}"
+    logo="{{ '<img src="%s"></img>' | format(url_for('%s.static' | format(integration_name), filename='logo.svg')) }}"
+></add-integration-button>

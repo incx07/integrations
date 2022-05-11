@@ -1,11 +1,10 @@
-from typing import Dict, Optional, Any, Callable
+from typing import Optional, Callable
 
 from pydantic.class_validators import validator
 from pydantic.main import ModelMetaclass
-
 from pydantic import BaseModel
 
-from ...shared.utils.rpc import RpcMixin
+from tools import rpc_tools
 
 
 class SectionRegistrationForm(BaseModel):
@@ -30,12 +29,12 @@ class RegistrationForm(BaseModel):
 
     @validator('section')
     def section_validator(cls, value, values):
-        section = RpcMixin().rpc.call.integrations_get_section(value)
+        section = rpc_tools.RpcMixin().rpc.call.integrations_get_section(value)
         if not section:
             if isinstance(value, str):
-                section = RpcMixin().rpc.call.integrations_register_section(name=value)
+                section = rpc_tools.RpcMixin().rpc.call.integrations_register_section(name=value)
             else:
-                section = RpcMixin().rpc.call.integrations_register_section(**value)
+                section = rpc_tools.RpcMixin().rpc.call.integrations_register_section(**value)
 
         return section.name
 

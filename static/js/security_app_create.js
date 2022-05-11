@@ -1,4 +1,4 @@
-$(document).ready(() => {
+$(() => {
     new SectionDataProvider('integrations', {
         get: () => (
             $('.integration_section').toArray().reduce((accum, item) => {

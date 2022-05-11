@@ -35,3 +35,11 @@
 .modal-body > .form-group {
     padding-right: 10px;
 }
+
+.section-name {
+    text-transform: capitalize;
+}
+
+.integration_icon {
+    font-size: 20px;
+}

@@ -3,8 +3,9 @@ from typing import Optional, Union
 from pydantic import BaseModel, validator
 from pylon.core.tools.log import log
 
-from .registration_pd import SectionRegistrationForm
-from ...shared.utils.rpc import RpcMixin
+from .registration import SectionRegistrationForm
+
+from tools import rpc_tools
 
 
 class IntegrationPD(BaseModel):
@@ -18,7 +19,7 @@ class IntegrationPD(BaseModel):
 
     @validator("settings")
     def validate_settings(cls, value, values):
-        integration = RpcMixin().rpc.call.integrations_get_integration(
+        integration = rpc_tools.RpcMixin().rpc.call.integrations_get_integration(
             values['name']
         )
         if not integration:
@@ -28,10 +29,10 @@ class IntegrationPD(BaseModel):
 
     @validator("section")
     def validate_section(cls, value, values):
-        section = RpcMixin().rpc.call.integrations_get_section(value)
+        section = rpc_tools.RpcMixin().rpc.call.integrations_get_section(value)
         if not section:
             log('Integration section %s was not found', value)
-            return RpcMixin().rpc.call.integrations_register_section(name=value)
+            return rpc_tools.RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
     @validator("description")
