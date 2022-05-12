@@ -54,6 +54,8 @@ class Module(module.ModuleModel):
             weight=5,
         )
 
+        self.descriptor.register_tool('integrations_tools', self)
+
     def deinit(self):  # pylint: disable=R0201
         """ De-init module """
         log.info('De-initializing module integrations')

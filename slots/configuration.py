@@ -1,11 +1,7 @@
-from flask import render_template
-
-
-
 from pylon.core.tools import web, log
+from flask import g
 
-from tools import auth
-from tools import theme
+# from tools import auth
 
 
 class Slot:  # pylint: disable=E1101,R0903
@@ -28,15 +24,15 @@ class Slot:  # pylint: disable=E1101,R0903
     @web.slot('integrations_configuration_add_button')
     def add_button(self, context, slot, payload):
         with context.app.app_context():
-            return render_template(
-                'integrations:configuration/add_button.html',
+            return self.descriptor.render_template(
+                'configuration/add_button.html',
                 config=payload
             )
 
     @web.slot('integrations_configuration_content')
     def configuration_content(self, context, slot, payload):
-        # log.warning('config payload %s', payload)
-        project_id = self.context.rpc_manager.call.project_get_id()
+        # project_id = self.context.rpc_manager.call.project_get_id()
+        project_id = g.project.id
 
         results = self.get_project_integrations(project_id)  # comes from RPC
 
@@ -44,8 +40,8 @@ class Slot:  # pylint: disable=E1101,R0903
         # payload['integrations_section_list'] = context.rpc_manager.call.integrations_section_list()
 
         with context.app.app_context():
-            return render_template(
-                'integrations:configuration/content.html',
+            return self.descriptor.render_template(
+                'configuration/content.html',
                 existing_integrations=results,
                 integrations_section_list=context.rpc_manager.call.integrations_section_list()
             )
@@ -53,15 +49,15 @@ class Slot:  # pylint: disable=E1101,R0903
     @web.slot('integrations_configuration_styles')
     def configuration_styles(self, context, slot, payload):
         with context.app.app_context():
-            return render_template(
-                'integrations:configuration/styles.html',
+            return self.descriptor.render_template(
+                'configuration/styles.html',
                 config=payload
             )
 
     @web.slot('integrations_configuration_scripts')
     def configuration_scripts(self, context, slot, payload):
         with context.app.app_context():
-            return render_template(
-                'integrations:configuration/scripts.html',
+            return self.descriptor.render_template(
+                'configuration/scripts.html',
                 config=payload
             )

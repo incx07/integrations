@@ -28,10 +28,10 @@ class RPC:
         # )
         form_data = RegistrationForm(**kwargs)
         self.integrations[form_data.name] = form_data
-        self.context.slot_manager.register_callback(
-            f'integrations_{form_data.section}',
-            form_data.integration_callback
-        )
+        # self.context.slot_manager.register_callback(
+        #     f'integrations_{form_data.section}',
+        #     form_data.integration_callback
+        # )
         return form_data
 
     @rpc('get_by_name')
