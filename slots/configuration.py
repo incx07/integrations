@@ -25,7 +25,7 @@ class Slot:  # pylint: disable=E1101,R0903
 
     """
 
-    @web.slot('configuration_integrations_add_button')
+    @web.slot('integrations_configuration_add_button')
     def add_button(self, context, slot, payload):
         with context.app.app_context():
             return render_template(
@@ -33,25 +33,24 @@ class Slot:  # pylint: disable=E1101,R0903
                 config=payload
             )
 
-    @web.slot('configuration_integrations_content')
+    @web.slot('integrations_configuration_content')
     def configuration_content(self, context, slot, payload):
-        log.warning('config payload %s', payload)
-        # todo: remove
-        project_id = 1
-        # todo: remove
+        # log.warning('config payload %s', payload)
+        project_id = self.context.rpc_manager.call.project_get_id()
 
-        results = self.get_project_integrations(project_id)
+        results = self.get_project_integrations(project_id)  # comes from RPC
 
-        payload['existing_integrations'] = results
-        payload['integrations_section_list'] = context.rpc_manager.call.integrations_section_list()
+        # payload['existing_integrations'] = results
+        # payload['integrations_section_list'] = context.rpc_manager.call.integrations_section_list()
 
         with context.app.app_context():
             return render_template(
                 'integrations:configuration/content.html',
-                config=payload
+                existing_integrations=results,
+                integrations_section_list=context.rpc_manager.call.integrations_section_list()
             )
 
-    @web.slot('configuration_integrations_styles')
+    @web.slot('integrations_configuration_styles')
     def configuration_styles(self, context, slot, payload):
         with context.app.app_context():
             return render_template(
@@ -59,7 +58,7 @@ class Slot:  # pylint: disable=E1101,R0903
                 config=payload
             )
 
-    @web.slot('configuration_integrations_scripts')
+    @web.slot('integrations_configuration_scripts')
     def configuration_scripts(self, context, slot, payload):
         with context.app.app_context():
             return render_template(

@@ -1,3 +1,5 @@
+{% set integrations_section_list = integrations_section_list | default([]) %}
+{% set existing_integrations = existing_integrations | default({}) %}
 <div class="card card-12">
     <div class="card-body">
         <div class="row border-bottom">
@@ -13,8 +15,8 @@
                 </div>
             </div>
         </div>
-        {% for section in config['integrations_section_list'] %}
-            {% set section_integrations = config['existing_integrations'].get(section.name, []) %}
+        {% for section in integrations_section_list %}
+            {% set section_integrations = existing_integrations.get(section.name, []) %}
             <div class="row section_row">
                 <div class="card card-x shadow-none">
                     <div class="card-header">
@@ -28,7 +30,8 @@
                             {% endfor %}
                         </div>
                         <div class="row d-flex mt-3 section_create">
-                            {{ template_slot("integrations_%s" | format(section.name), payload=config) | safe }}
+{#                            {{ template_slot("integrations_%s" | format(section.name), payload=config) | safe }}#}
+                            {{ template_slot("integrations_%s" | format(section.name)) | safe }}
                         </div>
                     </div>
                 </div>
