@@ -13,13 +13,14 @@ class API(Resource):
         self.module = module
 
     def post(self, integration_name: str):
-        integration = self.rpc.call.integrations_get_integration(integration_name)
+        integration = self.module.get_by_name(integration_name)
         if not integration:
             return {'error': 'integration not found'}, 404
         try:
             settings = integration.settings_model.parse_obj(request.json)
         except ValidationError as e:
-            return e.json(), 400
+            # return e.json(), 400
+            return e.errors(), 400
 
         check_connection_response = settings.check_connection()
         if not request.json.get('save_action'):

@@ -17,7 +17,6 @@ const AddIntegrationButton = {
         </div>
     `
 }
-vueApp.component('add-integration-button', AddIntegrationButton)
 
 const TestConnectionButton = {
     delimiters: ['[[', ']]'],
@@ -75,7 +74,6 @@ const TestConnectionButton = {
         },
     }
 }
-vueApp.component('TestConnectionButton', TestConnectionButton)
 
 const ModalDialog = {
     delimiters: ['[[', ']]'],
@@ -113,17 +111,17 @@ const ModalDialog = {
                 <label class="w-100">
                     <h9>Description</h9>
                     <textarea class="form-control" rows="1" placeholder="Optional"
-                    :value="description"
-                              @input="$emit('update:description', $event.target.value)">
-                        </textarea>
+                        :value="description"
+                        @input="$emit('update:description', $event.target.value)">
+                    </textarea>
 
                 </label>
             </div>
             <div class="form-check">
                 <label>
                     <input class="form-check-input" type="checkbox"
-                            :value="Boolean(is_default)"
-                           @input="$emit('update:is_default', $event.target.checked)"
+                            :checked="Boolean(is_default)"
+                            @input="$emit('update:is_default', $event.target.checked)"
                            >
                     <h9>
                         Set as default
@@ -138,4 +136,7 @@ const ModalDialog = {
 </div>
     `
 }
+
+vueApp.component('AddIntegrationButton', AddIntegrationButton)
+vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)

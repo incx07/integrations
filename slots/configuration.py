@@ -43,7 +43,8 @@ class Slot:  # pylint: disable=E1101,R0903
             return self.descriptor.render_template(
                 'configuration/content.html',
                 existing_integrations=results,
-                integrations_section_list=context.rpc_manager.call.integrations_section_list()
+                # integrations_section_list=context.rpc_manager.call.integrations_section_list()
+                integrations_section_list=self.section_list()
             )
 
     @web.slot('integrations_configuration_styles')
@@ -51,7 +52,7 @@ class Slot:  # pylint: disable=E1101,R0903
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/styles.html',
-                config=payload
+                integrations_section_list=self.section_list()
             )
 
     @web.slot('integrations_configuration_scripts')
@@ -59,5 +60,5 @@ class Slot:  # pylint: disable=E1101,R0903
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/scripts.html',
-                config=payload
+                integrations_section_list=self.section_list()
             )

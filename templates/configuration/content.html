@@ -30,8 +30,7 @@
                             {% endfor %}
                         </div>
                         <div class="row d-flex mt-3 section_create">
-{#                            {{ template_slot("integrations_%s" | format(section.name), payload=config) | safe }}#}
-                            {{ template_slot("integrations_%s" | format(section.name)) | safe }}
+                            {{ template_slot("integrations_%s_content" | format(section.name)) | safe }}
                         </div>
                     </div>
                 </div>

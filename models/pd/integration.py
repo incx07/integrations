@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
 from pydantic import BaseModel, validator
-from pylon.core.tools.log import log
+from pylon.core.tools import log
 
 from .registration import SectionRegistrationForm
 
@@ -19,11 +19,11 @@ class IntegrationPD(BaseModel):
 
     @validator("settings")
     def validate_settings(cls, value, values):
-        integration = rpc_tools.RpcMixin().rpc.call.integrations_get_integration(
+        integration = rpc_tools.RpcMixin().rpc.call.integrations_get_by_name(
             values['name']
         )
         if not integration:
-            log('Integration %s was not found', values['name'])
+            log.info('Integration [%s] was not found', values['name'])
             return dict()
         return integration.settings_model.parse_obj(value).dict(exclude={'password', 'passwd'})
 
@@ -31,7 +31,7 @@ class IntegrationPD(BaseModel):
     def validate_section(cls, value, values):
         section = rpc_tools.RpcMixin().rpc.call.integrations_get_section(value)
         if not section:
-            log('Integration section %s was not found', value)
+            log.info('Integration section [%s] was not found', value)
             return rpc_tools.RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
