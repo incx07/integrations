@@ -1,0 +1,3 @@
+{% for section in integrations_section_list | default([]) %}
+    {{ template_slot("security_%s_styles" | format(section.name)) | safe }}
+{% endfor %}
