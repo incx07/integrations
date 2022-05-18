@@ -124,14 +124,23 @@ const TestIntegrationItem = {
         this.selected_integration = this.default_integration?.id
     },
     computed: {
-        settings_id() {
-            return `settings_${this.integration_name}`
-        },
         selector_id() {
             return `selector_${this.integration_name}`
         },
+        settings_id() {
+            return `settings_${this.integration_name}`
+        },
         default_integration() {
             return this.project_integrations.find(item => item.is_default)
+        },
+        integration_data() {
+            return this.project_integrations.find(item => item.id === this.selected_integration)
+        }
+    },
+    watch: {
+        is_selected(newState, oldState) {
+            !newState && $(`#${this.selector_id}`).collapse('hide')
+            !newState && $(`#${this.settings_id}`).collapse('hide')
         }
     },
     methods: {
@@ -139,16 +148,17 @@ const TestIntegrationItem = {
             return integration.is_default ? `${integration.description} - default` : integration.description
         },
         clear_data() {
-            console.log('CLEAR_DATA TestIntegrationItem')
+            console.log('receiving clear_data')
             this.is_selected = false
-            $(this.$el).collapse('hide')
             this.selected_integration = this.default_integration?.id
+            $(`#${this.selector_id}`).collapse('hide')
+            $(`#${this.settings_id}`).collapse('hide')
         },
         set_data() {
+            console.log('receiving set_data')
             this.is_selected = true
-            $(this.$el).collapse('show')
+            $(`#${this.selector_id}`).collapse('show')
         },
-
     },
     template: `
 <div class="col-6">
@@ -160,8 +170,10 @@ const TestIntegrationItem = {
                         type="button"
                         class="btn btn-24 btn-action"
                         data-toggle="collapse" 
-                        :data-target="'#' + settings_id" 
+                        :data-target="is_selected && '#' + settings_id" 
                         v-if="!!this.$slots.settings"
+                        :class="!is_selected && 'disabled'"
+                        
                         >
                     <i class="fas fa-cog"></i>
                 </button>
@@ -186,12 +198,25 @@ const TestIntegrationItem = {
                         [[ getIntegrationTitle(integration) ]]
                     </option>
                 </select>
-                <slot name="settings"></slot>
+                
                 <slot 
                     name="selector"
-                    @set_data="set_data" 
-                    @clear_data="clear_data" 
+                    :on_set_data="set_data" 
+                    :on_clear_data="clear_data" 
                     :selected_integration="selected_integration"
+                    :integration_data="integration_data"
+                    :is_selected="is_selected"
+                ></slot>
+            </div>
+        </div>
+        <div class="row">
+            <div class="collapse col-12 mb-3 pl-0" :id="settings_id">
+                <slot 
+                    name="settings"
+                    :on_set_data="set_data" 
+                    :on_clear_data="clear_data" 
+                    :selected_integration="selected_integration"
+                    :integration_data="integration_data"
                     :is_selected="is_selected"
                 ></slot>
             </div>

@@ -130,7 +130,7 @@ class RPC:
             Integration.id == integration_id,
         ).one_or_none()
 
-    @web.rpc('integrations_security_test_create')
+    @web.rpc('security_test_create_integrations')
     @rpc_tools.wrap_exceptions(ValidationError)
     def security_test_create(
             self,
