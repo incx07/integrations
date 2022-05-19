@@ -1,5 +1,5 @@
 {
   "name": "Integrations plugin",
   "version": "0.1",
-  "depends_on": ["shared"]
+  "depends_on": ["projects"]
 }

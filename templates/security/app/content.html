@@ -1,8 +1,10 @@
-{% for section in config['integrations_section_list'] %}
+{% for section in integrations_section_list | default([]) %}
     <div class="section integration_section">
         <div class="row">
             <div class="col">
-                <h7 class="integration_section_name">{{ section.name }}</h7>
+                <h5 class="integration_section_name">
+                    {{ section.name | capitalize }}
+                </h5>
                 <p>
                     <h13>
                         {{ section.test_planner_description | safe }}
@@ -11,9 +13,7 @@
             </div>
         </div>
         <div class="row d-flex mt-2" id={{ "security_%s_section" | format(section.name) }}>
-            {{ template_slot("security_%s" | format(section.name), payload=config) | safe }}
+            {{ template_slot("security_%s_content" | format(section.name)) | safe }}
         </div>
     </div>
 {% endfor %}
-
-<script src="{{ url_for('integrations.static', filename='js/security_app_create.js') }}"></script>

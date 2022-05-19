@@ -1,11 +1,10 @@
-from plugins.shared.db_manager import Base
-from plugins.shared.models.abstract_base import AbstractBaseMixin
-from plugins.shared.utils.rpc import RpcMixin
 from sqlalchemy import Integer, Column, String, Boolean, UniqueConstraint, Index
 from sqlalchemy.dialects.postgresql import JSON
 
+from tools import db_tools, db, rpc_tools
 
-class Integration(AbstractBaseMixin, RpcMixin, Base):
+
+class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
     __tablename__ = "integration"
     __table_args__ = (
         Index(
