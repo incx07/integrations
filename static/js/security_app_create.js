@@ -164,7 +164,7 @@ const TestIntegrationItem = {
 <div class="col-6">
     <div class="card card-row-1">
         <div class="card-header">
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
                 <h9 class="flex-grow-1" style="line-height: 24px">[[ display_name ]]</h9>
                 <button aria-expanded="false" 
                         type="button"
@@ -182,7 +182,8 @@ const TestIntegrationItem = {
                            :data-target="'#' + selector_id" data-toggle="collapse"
                            v-model="is_selected"
                            />
-                    <span class="custom-toggle-slider rounded-circle"></span>
+<!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
+                    <span class="custom-toggle_slider round"></span>
                 </label>
             </div>
         </div>
