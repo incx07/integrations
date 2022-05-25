@@ -159,6 +159,9 @@ const TestIntegrationItem = {
             this.is_selected = true
             $(`#${this.selector_id}`).collapse('show')
         },
+        highlight_helper() {
+            console.log($(this.$el).closest('div.section').find('h13'))
+        }
     },
     template: `
 <div class="col-6">
@@ -181,6 +184,8 @@ const TestIntegrationItem = {
                     <input aria-expanded="false" type="checkbox"
                            :data-target="'#' + selector_id" data-toggle="collapse"
                            v-model="is_selected"
+                           :disabled="project_integrations.length === 0"
+                           @click="highlight_helper"
                            />
 <!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
                     <span class="custom-toggle_slider round"></span>
@@ -189,7 +194,7 @@ const TestIntegrationItem = {
         </div>
         <div class="row">
             <div class="collapse col-12 mb-3 pl-0" :id="selector_id">
-                <select class="selectpicker" data-style="btn-secondary"
+                <select class="selectpicker" data-style="select-secondary"
                     v-model="selected_integration">
                     <option
                         v-for="integration in project_integrations"
