@@ -203,7 +203,7 @@ const TestIntegrationItem = {
                     <input aria-expanded="false" type="checkbox"
                            :data-target="'#' + selector_id" data-toggle="collapse"
                            v-model="is_selected"
-                           :disabled="project_integrations.length === 0"
+                           :disabled="project_integrations.length === 0 && !errors.id"
                            />
 <!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
                     <span class="custom-toggle_slider round"></span>
