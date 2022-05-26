@@ -118,6 +118,7 @@ const TestIntegrationItem = {
         return {
             selected_integration: undefined,
             is_selected: false,
+            errors: {}
         }
     },
     mounted() {
@@ -153,14 +154,27 @@ const TestIntegrationItem = {
             this.selected_integration = this.default_integration?.id
             $(`#${this.selector_id}`).collapse('hide')
             $(`#${this.settings_id}`).collapse('hide')
+            this.clear_errors()
         },
-        set_data() {
-            console.log('receiving set_data')
+        set_data({id}) {
+            console.log('receiving set_data', 'id:', id)
+            console.log('receiving set_data', 'this.selected_integration', this.selected_integration)
+            !this.project_integrations.find(item => item.id === id) && this.handle_id_error()
+            this.selected_integration = id
             this.is_selected = true
             $(`#${this.selector_id}`).collapse('show')
         },
-        highlight_helper() {
-            console.log($(this.$el).closest('div.section').find('h13'))
+        handle_id_error() {
+            console.log('this.project_integrations.length', this.project_integrations.length === 0)
+            this.errors.id = `This integration no longer exists. 
+            ${this.project_integrations.length === 0 ? 'Create' : 'Select'} a new one, 
+            otherwise the integration won\'t be applied`
+            alertCreateTest?.add(`
+            Please fix errors in <a href="#" onclick="$('#${this.selector_id}')[0].scrollIntoView()">this integration section</a>
+            `, 'warning-overlay', true,)
+        },
+        clear_errors() {
+            this.errors = {}
         }
     },
     template: `
@@ -185,7 +199,6 @@ const TestIntegrationItem = {
                            :data-target="'#' + selector_id" data-toggle="collapse"
                            v-model="is_selected"
                            :disabled="project_integrations.length === 0"
-                           @click="highlight_helper"
                            />
 <!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
                     <span class="custom-toggle_slider round"></span>
@@ -194,21 +207,25 @@ const TestIntegrationItem = {
         </div>
         <div class="row">
             <div class="collapse col-12 mb-3 pl-0" :id="selector_id">
-                <select class="selectpicker" data-style="select-secondary"
-                    v-model="selected_integration">
-                    <option
-                        v-for="integration in project_integrations"
-                        :value="integration.id"
-                        :title="getIntegrationTitle(integration)"
-                    >
-                        [[ getIntegrationTitle(integration) ]]
-                    </option>
-                </select>
+                <div class="select-validation" 
+                    :class="{'invalid-select': this.errors.id}">
+                    <select class="selectpicker bootstrap-select__b" data-style="btn"
+                        v-model="selected_integration">
+                        <option
+                            v-for="integration in project_integrations"
+                            :value="integration.id"
+                            :title="getIntegrationTitle(integration)"
+                        >
+                            [[ getIntegrationTitle(integration) ]]
+                        </option>
+                    </select>
+                    <span class="select_error-msg">[[ errors.id ]]</span>
+                </div>
                 
                 <slot 
                     name="selector"
                     :on_set_data="set_data" 
-                    :on_clear_data="clear_data" 
+                    :on_clear_data="clear_data"
                     :selected_integration="selected_integration"
                     :integration_data="integration_data"
                     :is_selected="is_selected"
