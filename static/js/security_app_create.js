@@ -167,10 +167,11 @@ const TestIntegrationItem = {
         handle_id_error() {
             console.log('this.project_integrations.length', this.project_integrations.length === 0)
             this.errors.id = `This integration no longer exists. 
-            ${this.project_integrations.length === 0 ? 'Create' : 'Select'} a new one, 
-            otherwise the integration won\'t be applied`
+                ${this.project_integrations.length === 0 ? 'Create' : 'Select'} a new one, 
+                otherwise the integration won\'t be applied
+            `
             alertCreateTest?.add(`
-            Please fix errors in <a href="#" onclick="$('#${this.selector_id}')[0].scrollIntoView()">this integration section</a>
+                Please fix errors in <a href="#" onclick="$('#${this.selector_id}')[0].scrollIntoView()">this integration section</a>
             `, 'warning-overlay', true,)
         },
         clear_errors() {
@@ -194,7 +195,11 @@ const TestIntegrationItem = {
                         >
                     <i class="fas fa-cog"></i>
                 </button>
-                <label class="custom-toggle">
+                <label class="custom-toggle"
+                    :data-toggle="project_integrations.length === 0 && 'tooltip'" 
+                    data-placement="top" 
+                    title="No integrations found"
+                >
                     <input aria-expanded="false" type="checkbox"
                            :data-target="'#' + selector_id" data-toggle="collapse"
                            v-model="is_selected"
