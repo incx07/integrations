@@ -30,7 +30,6 @@ class Module(module.ModuleModel):
     def __init__(self, context, descriptor):
         self.context = context
         self.descriptor = descriptor
-        self.rpc_prefix = 'integrations'
 
         self.integrations = dict()
         self.sections = dict()
