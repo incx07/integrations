@@ -1,5 +1,3 @@
-from flask import render_template
-
 from pylon.core.tools import web, log
 
 
