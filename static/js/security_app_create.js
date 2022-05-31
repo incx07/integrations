@@ -3,7 +3,7 @@ $(() => {
         get: () => {
             let all_data = $('.integration_section').toArray().reduce((accum, item) => {
                 const sectionElement = $(item)
-                const sectionName = sectionElement.find('.integration_section_name').text().toLowerCase().replace(' ', '_')
+                const sectionName = sectionElement.find('.integration_section_name').text().trim().toLowerCase().replace(' ', '_')
                 let sectionData = sectionElement.find('.security_integration_item').toArray().reduce((acc, i) => {
                     const integrationName = i.dataset.name
                     const dataCallbackName = `${sectionName}_${integrationName}`
