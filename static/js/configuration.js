@@ -49,7 +49,6 @@ const TestConnectionButton = {
     `,
     watch: {
         is_fetching(newState, oldState) {
-            console.log('watch is_fetching', newState)
             if (newState) {
                 this.status = 0
             }
@@ -63,7 +62,6 @@ const TestConnectionButton = {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(this.body_data)
             }).then(response => {
-                console.log(response)
                 // this.is_fetching = false
                 this.$emit('update:is_fetching', false)
                 this.status = response.status
