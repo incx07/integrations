@@ -37,7 +37,7 @@ $(() => {
         },
         set: values => {
             if (values) {
-                console.log('SET integrations', values)
+                console.debug('SET integrations', values)
                 // {
                 //     scanners: {
                 //         qualys:
@@ -82,7 +82,7 @@ $(() => {
             })
         ),
         setError: data => {
-            console.log(data)
+            console.debug('SET error', data)
             const [dataCallbackName, ...rest] = data.loc
             data.loc = rest
             if (window[dataCallbackName]) {
@@ -149,7 +149,6 @@ const TestIntegrationItem = {
             return integration.is_default ? `${integration.description} - default` : integration.description
         },
         clear_data() {
-            console.log('receiving clear_data')
             this.is_selected = false
             this.selected_integration = this.default_integration?.id
             $(`#${this.selector_id}`).collapse('hide')
@@ -157,15 +156,13 @@ const TestIntegrationItem = {
             this.clear_errors()
         },
         set_data({id}) {
-            console.log('receiving set_data', 'id:', id)
-            console.log('receiving set_data', 'this.selected_integration', this.selected_integration)
+            console.debug('TestIntegrationItem receiving set_data', {id, selected_integration: this.selected_integration})
             !this.project_integrations.find(item => item.id === id) && this.handle_id_error()
             this.selected_integration = id
             this.is_selected = true
             $(`#${this.selector_id}`).collapse('show')
         },
         handle_id_error() {
-            console.log('this.project_integrations.length', this.project_integrations.length === 0)
             this.errors.id = `This integration no longer exists. 
                 ${this.project_integrations.length === 0 ? 'Create' : 'Select'} a new one, 
                 otherwise the integration won\'t be applied
