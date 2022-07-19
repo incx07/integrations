@@ -22,40 +22,20 @@ class RPC:
     @rpc('register')
     @rpc_tools.wrap_exceptions(ValidationError)
     def register(self, **kwargs) -> RegistrationForm:
-        # self.context.rpc_manager.register_function(
-        #     partial(register, self.integrations, self.context.slot_manager),
-        #     name='_'.join([self.rpc_prefix, 'register'])
-        # )
         form_data = RegistrationForm(**kwargs)
         self.integrations[form_data.name] = form_data
-        # self.context.slot_manager.register_callback(
-        #     f'integrations_{form_data.section}',
-        #     form_data.integration_callback
-        # )
         return form_data
 
     @rpc('get_by_name')
     def get_by_name(self, integration_name: str) -> Optional[RegistrationForm]:
-        # self.context.rpc_manager.register_function(
-        #     lambda integration_name: self.integrations.get(integration_name),
-        #     name='_'.join([self.rpc_prefix, 'get_integration'])
-        # )
         return self.integrations.get(integration_name)
 
     @rpc('list_integrations')
     def list_integrations(self) -> dict:
-        # self.context.rpc_manager.register_function(
-        #     lambda: self.integrations,
-        #     name='_'.join([self.rpc_prefix, 'list'])
-        # )
         return self.integrations
 
     @rpc('get_project_integrations')
     def get_project_integrations(self, project_id: int) -> dict:
-        # self.context.rpc_manager.register_function(
-        #     partial(get_project_integrations, registered_integrations=self.integrations.keys()),
-        #     name='_'.join([self.rpc_prefix, 'get_project_integrations'])
-        # )
         results = Integration.query.filter(
             Integration.project_id == project_id,
             Integration.name.in_(self.integrations.keys())
@@ -78,10 +58,6 @@ class RPC:
 
     @rpc('get_project_integrations_by_name')
     def get_project_integrations_by_name(self, project_id: int, integration_name: str) -> list:
-        # self.context.rpc_manager.register_function(
-        #     partial(get_project_integrations_by_name, registered_integrations=self.integrations.keys()),
-        #     name='_'.join([self.rpc_prefix, 'get_project_integrations_by_name'])
-        # )
         if integration_name not in self.integrations.keys():
             return []
         results = Integration.query.filter(
@@ -98,10 +74,6 @@ class RPC:
     @rpc('register_section')
     @rpc_tools.wrap_exceptions(ValidationError)
     def register_section(self, *, force_overwrite: bool = False, **kwargs) -> SectionRegistrationForm:
-        # self.context.rpc_manager.register_function(
-        #     partial(register_section, reg_dict_section=self.sections),
-        #     name='_'.join([self.rpc_prefix, 'register_section'])
-        # )
         form_data = SectionRegistrationForm(**kwargs)
         if form_data.name not in self.sections or force_overwrite:
             self.sections[form_data.name] = form_data
@@ -109,11 +81,6 @@ class RPC:
 
     @rpc('get_section')
     def get_section(self, section_name: str) -> Optional[SectionRegistrationForm]:
-
-    # self.context.rpc_manager.register_function(
-    #     lambda section_name: self.sections.get(section_name),
-    #     name='_'.join([self.rpc_prefix, 'get_section'])
-    # )
         return self.sections.get(section_name)
 
     @rpc('section_list')
@@ -122,10 +89,6 @@ class RPC:
 
     @rpc('get_by_id')
     def get_by_id(self, integration_id: int) -> Optional[Integration]:
-        # self.context.rpc_manager.register_function(
-        #     get_by_id,
-        #     name='_'.join([self.rpc_prefix, 'get_by_id'])
-        # )
         return Integration.query.filter(
             Integration.id == integration_id,
         ).one_or_none()
@@ -138,10 +101,6 @@ class RPC:
             skip_validation_if_undefined: bool = True,
             **kwargs
     ) -> dict:
-        # self.context.rpc_manager.register_function(
-        #     security_test_create,
-        #     name='_'.join(['security_test_create', self.rpc_prefix])
-        # )
         integration_data = dict()
 
         for section, integration in data.items():
@@ -175,10 +134,6 @@ class RPC:
             skip_validation_if_undefined: bool = True,
             **kwargs
     ) -> dict:
-        # self.context.rpc_manager.register_function(
-        #     security_test_create,
-        #     name='_'.join(['security_test_create', self.rpc_prefix])
-        # )
         integration_data = dict()
 
         for section, integration in data.items():
