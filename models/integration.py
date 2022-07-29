@@ -1,3 +1,4 @@
+from pylon.core.tools import log
 from sqlalchemy import Integer, Column, String, Boolean, UniqueConstraint, Index
 from sqlalchemy.dialects.postgresql import JSON
 
@@ -22,6 +23,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
     is_default = Column(Boolean, default=False, nullable=False)
     section = Column(String(64), unique=False, nullable=False)
     description = Column(String(256), unique=False, nullable=True, default='Default integration')
+    task_id = Column(String(256), unique=False, nullable=True)
 
     def make_default(self):
         Integration.query.filter(
@@ -33,6 +35,13 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
         self.is_default = True
         self.insert()
 
+    def set_task_id(self, task_id: str):
+        Integration.query.filter(
+            Integration.id == self.id
+        ).update({Integration.task_id: task_id})
+        self.insert()
+
+
     def insert(self):
         if not Integration.query.filter(
             Integration.project_id == self.project_id,
@@ -42,3 +51,20 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
             self.is_default = True
 
         super().insert()
+
+        # self.event_manager.fire
+        task_id = self.rpc.call_function_with_timeout(
+            func=f'{self.name}_created_or_updated',
+            timeout=3,
+            integration_data=self.to_json()
+        )
+        if task_id:
+            log.info('Got Task_ID: %s', task_id)
+            # self.task_id = task_id
+            # self.commit()
+            self.set_task_id(task_id)
+
+
+
+
+
