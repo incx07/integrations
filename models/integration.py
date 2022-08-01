@@ -41,7 +41,6 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
         ).update({Integration.task_id: task_id})
         self.insert()
 
-
     def insert(self):
         if not Integration.query.filter(
             Integration.project_id == self.project_id,
@@ -55,7 +54,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
         # self.event_manager.fire
         task_id = self.rpc.call_function_with_timeout(
             func=f'{self.name}_created_or_updated',
-            timeout=3,
+            timeout=30,
             integration_data=self.to_json()
         )
         if task_id:
