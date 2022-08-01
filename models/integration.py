@@ -54,7 +54,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
         # self.event_manager.fire
         task_id = self.rpc.call_function_with_timeout(
             func=f'{self.name}_created_or_updated',
-            timeout=30,
+            timeout=60,
             integration_data=self.to_json()
         )
         if task_id:
