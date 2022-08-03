@@ -33,13 +33,20 @@ var IntegrationSection = {
             ),
             setError: data => {
                 console.debug('SET error', data)
-                const [dataCallbackName, ...rest] = data.loc
-                data.loc = rest
-                if (window[dataCallbackName]) {
-                    window[dataCallbackName].set_error(data)
+                const process_error = error_data => {
+                    const [dataCallbackName, ...rest] = error_data.loc
+                    error_data.loc = rest
+                    if (window[dataCallbackName]) {
+                        window[dataCallbackName].set_error(error_data)
+                    } else {
+                        // vueVm.registered_components[integrationName]?.set_error(error_data)
+                        console.warn('SET ERROR FAIL', dataCallbackName, error_data.loc)
+                    }
+                }
+                if (Array.isArray(data)) {
+                    data.forEach(i => process_error(i))
                 } else {
-                    // vueVm.registered_components[integrationName]?.set_error(data)
-                    console.warn('SET ERROR FAIL', dataCallbackName, data.loc)
+                    process_error(data)
                 }
             },
             clearErrors: () => {
