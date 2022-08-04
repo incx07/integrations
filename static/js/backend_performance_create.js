@@ -7,7 +7,7 @@ var IntegrationSection = {
                     const tmp_data = i.section && i.get_data && i.get_data()
                     if (tmp_data && Object.entries(tmp_data).length) {
                         acc[i.section] = acc[i.section] || {}
-                        acc[i.section][name] = tmp_data
+                        acc[i.section][name.substring(instance_prefix.length)] = tmp_data
                     }
                     return acc
                 }, {})
