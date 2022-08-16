@@ -1,0 +1,3 @@
+{% if reporters %}
+    {{ template_slot("ui_performance_%s_styles" | format(reporters.name)) | safe }}
+{% endif %}

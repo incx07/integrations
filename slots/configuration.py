@@ -30,7 +30,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('integrations_configuration_content')
-    def configuration_content(self, context, slot, payload):
+    def content(self, context, slot, payload):
         # project_id = self.context.rpc_manager.call.project_get_id()
         project_id = g.project.id
 
@@ -48,7 +48,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('integrations_configuration_styles')
-    def configuration_styles(self, context, slot, payload):
+    def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/styles.html',
@@ -56,7 +56,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('integrations_configuration_scripts')
-    def configuration_scripts(self, context, slot, payload):
+    def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/scripts.html',
