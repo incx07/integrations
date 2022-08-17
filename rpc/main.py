@@ -158,3 +158,36 @@ class RPC:
                     e.loc = [f'{section}_{k}', *getattr(e, 'loc', [])]
                     raise e
         return {'integrations': integration_data}
+
+    @web.rpc('ui_performance_test_create_integrations')
+    @rpc_tools.wrap_exceptions(ValidationError)
+    def ui_performance_test_create(
+            self,
+            data: dict,
+            skip_validation_if_undefined: bool = True,
+            **kwargs
+    ) -> dict:
+        integration_data = dict()
+
+        for section, integration in data.items():
+            integration_data[section] = dict()
+            for k, v in integration.items():
+                try:
+                    integration_data[section][k] = self.context.rpc_manager.call_function_with_timeout(
+                        func=f'ui_performance_test_create_integration_validate_{k}',
+                        timeout=1,
+                        data=v,
+                        **kwargs
+                    )
+                except Empty:
+                    log.warning(f'Cannot validate integration data for {k}')
+                    if skip_validation_if_undefined:
+                        integration_data[section][k] = v
+                except ValidationError as e:
+                    for i in e.errors():
+                        i['loc'] = [f'{section}_{k}', *i['loc']]
+                    raise e
+                except Exception as e:
+                    e.loc = [f'{section}_{k}', *getattr(e, 'loc', [])]
+                    raise e
+        return {'integrations': integration_data}
