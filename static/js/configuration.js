@@ -135,6 +135,63 @@ const ModalDialog = {
     `
 }
 
+const SecretFieldInput = {
+    props: ["modelValue", "placeholder"],
+    emits: ['update:modelValue'],
+    computed: {
+        value: {
+            get() {
+                if (this.modelValue.hasOwnProperty("value")) {
+                    return this.modelValue.value
+                }
+                return this.modelValue
+            },
+            set(value) {
+                this.$emit('update:modelValue', {
+                    value: value,
+                    from_secrets: this.from_secrets
+                })
+            }
+        }
+    },
+    template: `
+    <div class="custom-input__tabs">
+        <input :type="from_secrets ? 'text' : 'password'"
+           class="form-control form-control-alternative" 
+           :placeholder="placeholder"
+           v-model="value"
+           style="padding-left: 170px"
+        >
+        <ul class="input-tabs nav nav-pills" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="font-h6 font-semibold active" 
+                href=""
+                data-toggle="pill" 
+                role="tab" 
+                :aria-selected="from_secrets"
+                @click="from_secrets = true"
+                >Secret</a>
+            </li>
+            <li class="nav-item" role="presentation" >
+                <a class="font-h6 font-semibold" 
+                href="" 
+                data-toggle="pill" 
+                role="tab" 
+                :aria-selected="from_secrets"
+                @click="from_secrets = false"
+                >Password</a>
+            </li>
+        </ul>
+    </div>
+    `,
+    data() {
+        return {
+            from_secrets: true,
+        }
+    }
+}
+
+vueApp.component('SecretFieldInput', SecretFieldInput)
 vueApp.component('AddIntegrationButton', AddIntegrationButton)
 vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)
