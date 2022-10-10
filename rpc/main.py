@@ -73,8 +73,7 @@ class RPC:
 
     @rpc('register_section')
     @rpc_tools.wrap_exceptions(ValidationError)
-    def register_section(self, *, force_overwrite: bool = False, **kwargs
-    ) -> SectionRegistrationForm:
+    def register_section(self, *, force_overwrite: bool = False, **kwargs) -> SectionRegistrationForm:
         form_data = SectionRegistrationForm(**kwargs)
         if form_data.name not in self.sections or force_overwrite:
             self.sections[form_data.name] = form_data
@@ -176,8 +175,7 @@ class RPC:
             integration_data[section] = dict()
             for k, v in integration.items():
                 try:
-                    integration_data[section][
-                        k] = self.context.rpc_manager.call_function_with_timeout(
+                    integration_data[section][k] = self.context.rpc_manager.call_function_with_timeout(
                         func=f'ui_performance_test_create_integration_validate_{k}',
                         timeout=1,
                         data=v,
@@ -229,3 +227,4 @@ class RPC:
         secrets_tools.set_project_hidden_secrets(integration_data["project_id"], secrets)
 
         return settings
+

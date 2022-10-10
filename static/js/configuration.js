@@ -160,7 +160,7 @@ const SecretFieldInput = {
            class="form-control form-control-alternative" 
            :placeholder="placeholder"
            v-model="value"
-           style="padding-left: 170px"
+           style="padding-left: 140px"
         >
         <ul class="input-tabs nav nav-pills" role="tablist">
             <li class="nav-item" role="presentation">
@@ -179,7 +179,7 @@ const SecretFieldInput = {
                 role="tab" 
                 :aria-selected="from_secrets"
                 @click="from_secrets = false"
-                >Password</a>
+                >Plain</a>
             </li>
         </ul>
     </div>
