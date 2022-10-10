@@ -63,7 +63,14 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin):
             # self.commit()
             self.set_task_id(task_id)
 
+        self.process_secret_fields()
 
+    def process_secret_fields(self):
+        settings: dict = self.rpc.call.integrations_process_secrets(
+            integration_data=self.to_json(),
+        )
 
-
-
+        Integration.query.filter(
+            Integration.id == self.id
+        ).update({Integration.settings: settings})
+        super().insert()

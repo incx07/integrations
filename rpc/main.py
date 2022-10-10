@@ -8,10 +8,10 @@ from sqlalchemy import desc, asc
 from pydantic import parse_obj_as, ValidationError
 
 from ..models.integration import Integration
-from ..models.pd.integration import IntegrationPD
+from ..models.pd.integration import IntegrationPD, SecretField
 from ..models.pd.registration import RegistrationForm, SectionRegistrationForm
 
-from tools import rpc_tools
+from tools import rpc_tools, secrets_tools
 
 from pylon.core.tools import web
 
@@ -107,7 +107,8 @@ class RPC:
             integration_data[section] = dict()
             for k, v in integration.items():
                 try:
-                    integration_data[section][k] = self.context.rpc_manager.call_function_with_timeout(
+                    integration_data[section][
+                        k] = self.context.rpc_manager.call_function_with_timeout(
                         func=f'security_test_create_integration_validate_{k}',
                         timeout=1,
                         data=v,
@@ -140,7 +141,8 @@ class RPC:
             integration_data[section] = dict()
             for k, v in integration.items():
                 try:
-                    integration_data[section][k] = self.context.rpc_manager.call_function_with_timeout(
+                    integration_data[section][
+                        k] = self.context.rpc_manager.call_function_with_timeout(
                         func=f'backend_performance_test_create_integration_validate_{k}',
                         timeout=1,
                         data=v,
@@ -191,3 +193,38 @@ class RPC:
                     e.loc = [f'{section}_{k}', *getattr(e, 'loc', [])]
                     raise e
         return {'integrations': integration_data}
+
+    @rpc('process_secrets')
+    @rpc_tools.wrap_exceptions(RuntimeError)
+    def process_secrets(self, integration_data: dict) -> dict:
+        """
+        Processes secret field in settings of integration
+        Finds all secret field and if it exists and given raw,
+        writes to secret and replaced field in database with link
+
+        :return: settings of integration dict
+        """
+        project_id = integration_data["project_id"]
+        secrets = secrets_tools.get_project_hidden_secrets(project_id)
+        settings: dict = integration_data["settings"]
+
+        for field, value in settings.items():
+            try:
+                secret_field = SecretField.parse_obj(value)
+            except ValidationError:
+                continue
+            if secret_field.from_secrets:
+                continue
+
+            secret_path = f"{field}_{integration_data['id']}"
+            secrets[secret_path] = secret_field.value
+
+            secret_field.value = "{{" + f"secret.{secret_path}" + "}}"
+            secret_field.from_secrets = True
+
+            settings[field] = secret_field.dict()
+
+        secrets_tools.set_project_hidden_secrets(integration_data["project_id"], secrets)
+
+        return settings
+

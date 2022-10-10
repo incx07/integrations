@@ -5,11 +5,10 @@ from pylon.core.tools import log
 
 from .registration import SectionRegistrationForm
 
-from tools import rpc_tools
+from tools import rpc_tools, secrets_tools, session_project
 
 
 class IntegrationPD(BaseModel):
-
     id: int
     name: str
     section: Union[str, SectionRegistrationForm]
@@ -44,3 +43,17 @@ class IntegrationPD(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SecretField(BaseModel):
+    from_secrets: bool
+    value: str
+
+    def unsecret(self):
+        if self.from_secrets:
+            return secrets_tools.unsecret(
+                self.value,
+                project_id=session_project.get()
+            )
+        else:
+            return self.value
