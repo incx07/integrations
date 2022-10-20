@@ -20,4 +20,4 @@ class API(Resource):
     def get(self, project_id: int):
         results = Integration.query.filter(Integration.project_id == project_id).all()
         results = parse_obj_as(List[IntegrationPD], results)
-        return jsonify([i.dict() for i in results]), 200
+        return [i.dict() for i in results], 200

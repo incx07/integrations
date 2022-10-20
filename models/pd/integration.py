@@ -49,11 +49,11 @@ class SecretField(BaseModel):
     from_secrets: bool
     value: str
 
-    def unsecret(self):
+    def unsecret(self, project_id: int):
         if self.from_secrets:
             return secrets_tools.unsecret(
                 self.value,
-                project_id=session_project.get()
+                project_id=project_id
             )
         else:
             return self.value
