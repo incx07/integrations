@@ -11,9 +11,10 @@ const AddIntegrationButton = {
              data-toggle="modal"
              :data-target="modal_target"
         >
-            <div style="font-size: 20px"><i class="fa fa-plus"></i></div>
-            <div class="col-2" v-html="logo"></div>
-            <div class="col">[[ display_name ]]</div>
+            <div><i class="fa fa-plus"></i></div>
+            <div v-if="logo" v-html="logo"></div>
+            <slot v-else></slot>
+            <div>[[ display_name ]]</div>
         </div>
     `
 }
@@ -81,18 +82,18 @@ const ModalDialog = {
 <div class="modal-dialog modal-dialog-aside" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <div class="row w-100">
-                <div class="col">
+            <div class="d-flex align-items-center w-100 justify-content-between">
+                <div>
                     <h2>[[ display_name ]] integration</h2>
                     <p v-if="id">
                         <h13>id: [[ id ]]</h13>
                     </p>
                 </div>
-                <div class="col-xs">
+                <div class="d-flex">
                     <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
                         Cancel
                     </button>
-                    <button type="button" class="btn btn-sm btn-secondary"
+                    <button type="button" class="btn btn-sm btn-secondary ml-1"
                             :class="{disabled: is_fetching, updating: is_fetching}"
                             @click.prevent="id ? $emit('update') : $emit('create')"
                     >
@@ -115,9 +116,9 @@ const ModalDialog = {
 
                 </label>
             </div>
-            <div class="form-check">
-                <label>
-                    <input class="form-check-input" type="checkbox"
+            <div>
+                <label class="custom-checkbox d-flex align-items-center">
+                    <input class="mr-1" type="checkbox"
                             :checked="Boolean(is_default)"
                             @input="$emit('update:is_default', $event.target.checked)"
                            >

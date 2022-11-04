@@ -1,8 +1,7 @@
-from typing import List
-
+from pylon.core.tools import log
 from flask_restful import Resource
 
-from flask import request, jsonify
+from flask import request
 from pydantic import ValidationError, parse_obj_as
 
 from ...models.integration import Integration
@@ -50,7 +49,6 @@ class API(Resource):
         try:
             settings = integration.settings_model.parse_obj(request.json)
         except ValidationError as e:
-            # return e.json(), 400
             return e.errors(), 400
 
         if request.json.get('is_default'):

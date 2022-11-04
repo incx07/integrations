@@ -1,6 +1,7 @@
 .integration_card {
     width: 340px;
     height: 104px;
+    border-radius: 7px;
 }
 
 .integration_card .badge {
@@ -26,10 +27,27 @@
 .integration_add {
     border: 1px solid;
     justify-content: space-around;
+    width: 200px;
+}
+
+/*add integration button*/
+.integration_add > div:first-child {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+/*add integration name text*/
+.integration_add > div:last-child {
+    flex-grow: 1;
+    margin-left: 10px;
 }
 
 .section_create {
-    margin-left: auto;
+    margin: 0 -5px;
+}
+
+.section_create > div {
+    margin: 0 5px;
 }
 
 .modal-body > .form-group {

@@ -1,7 +1,7 @@
 from pylon.core.tools import web, log
-from flask import g
+# from flask import g
 
-# from tools import auth
+from tools import session_project
 
 
 class Slot:  # pylint: disable=E1101,R0903
@@ -31,19 +31,13 @@ class Slot:  # pylint: disable=E1101,R0903
 
     @web.slot('integrations_configuration_content')
     def content(self, context, slot, payload):
-        # project_id = self.context.rpc_manager.call.project_get_id()
-        project_id = g.project.id
-
+        project_id = session_project.get()
         results = self.get_project_integrations(project_id)  # comes from RPC
-
-        # payload['existing_integrations'] = results
-        # payload['integrations_section_list'] = context.rpc_manager.call.integrations_section_list()
 
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/content.html',
                 existing_integrations=results,
-                # integrations_section_list=context.rpc_manager.call.integrations_section_list()
                 integrations_section_list=self.section_list()
             )
 
