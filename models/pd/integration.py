@@ -47,7 +47,7 @@ class IntegrationPD(BaseModel):
 
 
 class SecretField(BaseModel):
-    from_secrets: bool
+    from_secrets: bool = True
     value: str
 
     def unsecret(self, project_id: int):

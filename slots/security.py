@@ -6,9 +6,10 @@ class Slot:
     @web.slot('integrations_security_app_content')
     def content(self, context, slot, payload):
         with context.app.app_context():
+            sections = [section for section in self.section_list() if section.name != "clouds"]
             return self.descriptor.render_template(
                 'security/app/content.html',
-                integrations_section_list=self.section_list()
+                integrations_section_list=sections
             )
 
     @web.slot('integrations_security_app_scripts')
