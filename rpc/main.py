@@ -73,7 +73,8 @@ class RPC:
 
     @rpc('register_section')
     @rpc_tools.wrap_exceptions(ValidationError)
-    def register_section(self, *, force_overwrite: bool = False, **kwargs) -> SectionRegistrationForm:
+    def register_section(self, *, force_overwrite: bool = False, **kwargs
+    ) -> SectionRegistrationForm:
         form_data = SectionRegistrationForm(**kwargs)
         if form_data.name not in self.sections or force_overwrite:
             self.sections[form_data.name] = form_data
@@ -175,7 +176,8 @@ class RPC:
             integration_data[section] = dict()
             for k, v in integration.items():
                 try:
-                    integration_data[section][k] = self.context.rpc_manager.call_function_with_timeout(
+                    integration_data[section][
+                        k] = self.context.rpc_manager.call_function_with_timeout(
                         func=f'ui_performance_test_create_integration_validate_{k}',
                         timeout=1,
                         data=v,
@@ -227,4 +229,22 @@ class RPC:
         secrets_tools.set_project_hidden_secrets(integration_data["project_id"], secrets)
 
         return settings
+
+    @rpc('get_cloud_integrations')
+    def get_cloud_integrations(self, project_id: int) -> list:
+        """
+        Gets project integrations in cloud section
+        """
+        integrations = self.get_project_integrations(project_id)
+        cloud_regions = [
+            {
+                "name": f"{region.name.split('_')[0]} {region.description}"
+                        f"{' - default' if region.is_default else ''}",
+                "cloud_settings": {
+                    "integration_name": region.name,
+                    "id": region.id,
+                    **region.settings
+                }
+            } for region in integrations["clouds"]]
+        return cloud_regions
 
