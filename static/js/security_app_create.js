@@ -83,15 +83,29 @@ $(() => {
         ),
         setError: data => {
             console.debug('SET error', data)
-            const [dataCallbackName, ...rest] = data.loc
-            data.loc = rest
-            if (window[dataCallbackName]) {
-                window[dataCallbackName].set_error(data)
+            const process_error = error_data => {
+                const [dataCallbackName, ...rest] = error_data.loc
+                const integrationName = dataCallbackName.split('_').splice(1).join('_')
+                error_data.loc = rest
+                if (window[integrationName]) {
+                    window[integrationName].set_error(error_data)
+                } else {
+                    vueVm.registered_components[integrationName]?.set_error(error_data)
+                    // console.warn('SET ERROR FAIL', dataCallbackName, error_data.loc)
+                }
+            }
+            if (Array.isArray(data)) {
+                data.forEach(i => process_error(i))
             } else {
-                // vueVm.registered_components[integrationName]?.set_error(data)
-                console.warn('SET ERROR FAIL', dataCallbackName, data.loc)
+                process_error(data)
             }
         },
+        clearErrors: () => {
+            Object.values(vueVm.registered_components).forEach(i => {
+             i.clear_errors && i.clear_errors()
+            })
+        },
+        /*
         clearErrors: () => {
             $('.integration_section').toArray().forEach(item => {
                 const sectionElement = $(item)
@@ -107,6 +121,7 @@ $(() => {
                 })
             })
         },
+        */
         default: {}
     }).register()
 })
@@ -250,5 +265,6 @@ const TestIntegrationItem = {
 </div>
     `,
 }
+
 
 vueApp.component('TestIntegrationItem', TestIntegrationItem)
