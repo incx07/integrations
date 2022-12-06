@@ -10,6 +10,7 @@ class Slot:
         with context.app.app_context():
             return self.descriptor.render_template(
                 'ui_performance/content.html',
+                processing=self.get_section('processing'),
                 reporters=self.get_section('reporters'),
                 instance_name_prefix=payload.get('instance_name_prefix', '')
             )
@@ -19,6 +20,7 @@ class Slot:
         with context.app.app_context():
             return self.descriptor.render_template(
                 'ui_performance/scripts.html',
+                processing=self.get_section('processing'),
                 reporters=self.get_section('reporters')
             )
 
