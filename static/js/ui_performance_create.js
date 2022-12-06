@@ -35,12 +35,13 @@ var IntegrationSection = {
                 console.debug('SET error', data)
                 const process_error = error_data => {
                     const [dataCallbackName, ...rest] = error_data.loc
+                    const integrationName = dataCallbackName.split('_').splice(1).join('_')
                     error_data.loc = rest
-                    if (window[dataCallbackName]) {
-                        window[dataCallbackName].set_error(error_data)
+                    if (window[integrationName]) {
+                        window[integrationName].set_error(error_data)
                     } else {
-                        // vueVm.registered_components[integrationName]?.set_error(error_data)
-                        console.warn('SET ERROR FAIL', dataCallbackName, error_data.loc)
+                        vueVm.registered_components[integrationName]?.set_error(error_data)
+                        // console.warn('SET ERROR FAIL', dataCallbackName, error_data.loc)
                     }
                 }
                 if (Array.isArray(data)) {
@@ -50,21 +51,8 @@ var IntegrationSection = {
                 }
             },
             clearErrors: () => {
-                $('.integration_section').toArray().forEach(item => {
-                    const sectionElement = $(item)
-                    const sectionName = sectionElement.find('.integration_section_name').text().toLowerCase().replace(' ', '_')
-                    sectionElement.find('.security_integration_item').toArray().forEach(i => {
-                        const integrationName = $(i).attr('data-name')
-                        const dataCallbackName = `${sectionName}_${integrationName}`
-                        if (window[dataCallbackName]) {
-                            window[dataCallbackName].clear_errors && window[dataCallbackName].clear_errors()
-                        } else {
-                            let component_proxy = vueVm.registered_components[`${instance_prefix}${integrationName}`]
-                            component_proxy?.section &&
-                            component_proxy?.clear_errors &&
-                            component_proxy?.clear_errors()
-                        }
-                    })
+                Object.values(vueVm.registered_components).forEach(i => {
+                 i.clear_errors && i.clear_errors()
                 })
             },
         }
@@ -173,7 +161,7 @@ const TestIntegrationItem = {
         </div>
         <div class="row">
             <div class="collapse col-12 mb-3 pl-0" :id="selector_id">
-                <div class="select-validation" 
+                <div v-if="this.selected_integration !== 'quality_gate'" class="select-validation"
                     :class="{'invalid-select': this.errors.id}">
                     <select class="selectpicker bootstrap-select__b" data-style="btn"
                         v-model="selected_integration">

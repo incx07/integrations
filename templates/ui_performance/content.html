@@ -1,4 +1,25 @@
 {% set instance_name_prefix = instance_name_prefix | default('') %}
+
+<div class="section integration_section">
+    <div class="row">
+        <div class="col">
+            <h5 class="integration_section_name">
+                {{- processing.name | capitalize -}}
+            </h5>
+            <p>
+                <h13>
+                    {{- processing.test_planner_description | safe -}}
+                </h13>
+            </p>
+        </div>
+    </div>
+    <div class="row d-flex mt-2" id="ui_performance_processing_section">
+        {{ template_slot("ui_performance_processing_content", payload={
+                        'instance_name_prefix': instance_name_prefix
+                        }) | safe }}
+    </div>
+</div> 
+
 {% if reporters %}
     <div class="section integration_section">
         <div class="row">
