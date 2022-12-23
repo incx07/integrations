@@ -196,3 +196,11 @@ vueApp.component('SecretFieldInput', SecretFieldInput)
 vueApp.component('AddIntegrationButton', AddIntegrationButton)
 vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)
+
+
+
+socket.on("task_creation_failed", msg => {
+    window.onload = function (){
+        showNotify("ERROR", msg);
+    }
+});
