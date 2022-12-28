@@ -24,10 +24,14 @@
     color: #fff;
 }
 
+.integration_icon_container {
+    flex-basis: 25%;
+}
+
 .integration_add {
     border: 1px solid;
-    justify-content: space-around;
-    width: 200px;
+    /*justify-content: space-around;*/
+    /*width: 200px;*/
 }
 
 /*add integration button*/
@@ -58,16 +62,16 @@
     text-transform: capitalize;
 }
 
-.integration_icon {
-    font-size: 20px;
-}
+/*.integration_icon {*/
+/*    font-size: 20px;*/
+/*}*/
 
-.col-6:first-child {
-	padding-left: 1px;
-}
-.col-6:last-child {
-	padding-right: 1px;
-}
+/*.col-6:first-child {*/
+/*	padding-left: 1px;*/
+/*}*/
+/*.col-6:last-child {*/
+/*	padding-right: 1px;*/
+/*}*/
 
 .form-row {
     margin: 0;
