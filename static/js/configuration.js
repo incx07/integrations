@@ -56,20 +56,24 @@ const TestConnectionButton = {
         }
     },
     methods: {
-        test_connection() {
+        async test_connection() {
             this.$emit('update:is_fetching', true)
-            fetch(this.apiPath, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.body_data)
-            }).then(response => {
-                // this.is_fetching = false
-                this.$emit('update:is_fetching', false)
-                this.status = response.status
-                if (!response.ok) {
-                    this.$emit('handleError', response)
+            try {
+                const resp = await fetch(this.apiPath, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.body_data)
+                })
+                this.status = resp.status
+                if (!resp.ok) {
+                    this.$emit('handleError', await resp.json())
                 }
-            })
+            } catch (e) {
+                console.error(e)
+                showNotify('WARNING', 'Test not successful')
+            } finally {
+                this.$emit('update:is_fetching', false)
+            }
         },
     }
 }
@@ -84,7 +88,7 @@ const ModalDialog = {
         <div class="modal-header">
             <div class="d-flex align-items-center w-100 justify-content-between">
                 <div>
-                    <h2>[[ display_name ]] integration</h2>
+                    <h2>[[ display_name ]]</h2>
                     <p v-if="id">
                         <h13>id: [[ id ]]</h13>
                     </p>
@@ -197,16 +201,9 @@ vueApp.component('AddIntegrationButton', AddIntegrationButton)
 vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)
 
-
-
-socket.on("task_creation", payload => {
-    if (payload['ok']){
-        showNotify("SUCCESS", "Task created successfully")
-        integrationName = payload['name']
-        integrationId = payload['id']
-        imgSrc = payload['img_src']
-        $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
-        return
-    }
-    showNotify("ERROR", payload['msg']);
-});
+// $(document).on('vue_init', () => {
+//     V.custom_data.handle_integrations_update = integration => {
+//         console.log('integration updated', integration)
+//         showNotify('SUCCESS')
+//     }
+// })

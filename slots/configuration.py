@@ -21,24 +21,30 @@ class Slot:  # pylint: disable=E1101,R0903
 
     """
 
-    @web.slot('integrations_configuration_add_button')
-    def add_button(self, context, slot, payload):
-        with context.app.app_context():
-            return self.descriptor.render_template(
-                'configuration/add_button.html',
-                config=payload
-            )
+    # @web.slot('integrations_configuration_add_button')
+    # def add_button(self, context, slot, payload):
+    #     with context.app.app_context():
+    #         return self.descriptor.render_template(
+    #             'configuration/add_button.html',
+    #             config=payload
+    #         )
 
     @web.slot('integrations_configuration_content')
     def content(self, context, slot, payload):
         project_id = session_project.get()
-        results = self.get_project_integrations(project_id)  # comes from RPC
+        existing_integrations = self.get_project_integrations(project_id)  # comes from RPC
+        all_sections = tuple(i.dict(exclude={'test_planner_description'}) for i in self.section_list())
+        for i in all_sections:
+            # i['integrations'] = existing_integrations.get(i['name'], [])
+            i['integrations'] = list(map(lambda x: x.dict(), existing_integrations.get(i['name'], [])))
+            # i['integrations_parsed'] = [pd.dict() for pd in i['integrations']]
 
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/content.html',
-                existing_integrations=results,
-                integrations_section_list=self.section_list()
+                existing_integrations=existing_integrations,
+                integrations_section_list=self.section_list(),
+                all_sections=all_sections
             )
 
     @web.slot('integrations_configuration_styles')
