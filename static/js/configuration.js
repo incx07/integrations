@@ -110,9 +110,9 @@ const ModalDialog = {
         <div class="modal-body">
             <slot name="body"></slot>
             
-            <div class="form-group">
+            <div>
                 <label class="w-100">
-                    <h9>Description</h9>
+                    <p class="font-h5 font-semibold">Description</p>
                     <textarea class="form-control" rows="1" placeholder="Optional"
                         :value="description"
                         @input="$emit('update:description', $event.target.value)">
@@ -120,15 +120,13 @@ const ModalDialog = {
 
                 </label>
             </div>
-            <div>
+            <div class="mt-2">
                 <label class="custom-checkbox d-flex align-items-center">
                     <input class="mr-1" type="checkbox"
                             :checked="Boolean(is_default)"
                             @input="$emit('update:is_default', $event.target.checked)"
                            >
-                    <h9>
-                        Set as default
-                    </h9>
+                    <p class="font-h5 font-semibold">Set as default</p>
                 </label>
             </div>
             
