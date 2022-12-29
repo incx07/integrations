@@ -1,3 +1,9 @@
+window.integration_status = {
+    success: 'success',
+    error: 'error',
+    pending: 'pending'
+}
+
 const AddIntegrationButton = {
     delimiters: ['[[', ']]'],
     props: ['integration_name', 'logo', 'display_name'],
@@ -198,16 +204,3 @@ vueApp.component('SecretFieldInput', SecretFieldInput)
 vueApp.component('AddIntegrationButton', AddIntegrationButton)
 vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)
-
-
-socket.on("task_creation", payload => {
-    if (payload['ok']){
-        showNotify("SUCCESS", "Task created successfully")
-        integrationName = payload['name']
-        integrationId = payload['id']
-        imgSrc = payload['img_src']
-        $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
-        return
-    }
-    showNotify("ERROR", payload['msg']);
-});

@@ -9,6 +9,18 @@ const IntegrationSections = {
     mounted() {
         this.sections = this.initial_sections
         this.$root.custom_data.handle_integrations_update = this.handle_integration_update
+        window.socket.on("task_creation", payload => {
+            console.log('payload', payload)
+            if (payload['ok']) {
+                showNotify("SUCCESS", "Task created successfully")
+                // integrationName = payload['name']
+                // integrationId = payload['id']
+                // imgSrc = payload['img_src']
+                // $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
+                return
+            }
+            showNotify("ERROR", payload['msg']);
+        });
     },
     methods: {
         async handle_integration_update(integration) {
@@ -39,25 +51,25 @@ const IntegrationSections = {
         }
     },
     template: `
-            <div class="row section_row" v-for="section in sections">
-                <div class="card card-x shadow-none">
-                    <div class="card-header">
-                        <h3 class="section-name">[[ section.name ]]</h3>
-                        <h9>[[ section.integration_description ]]</h9>
+        <div class="row section_row" v-for="section in sections">
+            <div class="card card-x shadow-none">
+                <div class="card-header">
+                    <h3 class="section-name">[[ section.name ]]</h3>
+                    <h9>[[ section.integration_description ]]</h9>
+                </div>
+                <div class="card-body">
+                    <div class="row d-flex section_cards">
+                        <Integration-Card
+                            v-for="integration in section.integrations"
+                            v-bind="integration"
+                        ></Integration-Card>
                     </div>
-                    <div class="card-body">
-                        <div class="row d-flex section_cards">
-                            <Integration-Card
-                                v-for="integration in section.integrations"
-                                v-bind="integration"
-                            ></Integration-Card>
-                        </div>
-                        <div class="row d-flex mt-3 section_create">
-                            <slot :name="'section_create_' + section.name"></slot>
-                        </div>
+                    <div class="row d-flex mt-3 section_create">
+                        <slot :name="'section_create_' + section.name"></slot>
                     </div>
                 </div>
             </div>
+        </div>
     `
 }
 register_component('IntegrationSections', IntegrationSections)

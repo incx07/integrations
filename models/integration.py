@@ -23,6 +23,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
     section = Column(String(64), unique=False, nullable=False)
     description = Column(String(256), unique=False, nullable=True, default='Default integration')
     task_id = Column(String(256), unique=False, nullable=True)
+    status = Column(String(32), unique=False, nullable=False, default='success')
 
     def make_default(self):
         Integration.query.filter(
@@ -49,8 +50,8 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
             self.is_default = True
 
         super().insert()
-        self.event_manager.fire_event(f'{self.name}_created_or_updated', self.to_json())
         self.process_secret_fields()
+        self.event_manager.fire_event(f'{self.name}_created_or_updated', self.to_json())
 
     def process_secret_fields(self):
         settings: dict = self.rpc.call.integrations_process_secrets(

@@ -16,6 +16,7 @@ class IntegrationPD(BaseModel):
     is_default: bool
     description: Optional[str]
     task_id: Optional[str]
+    status: Optional[str] = 'success'
 
     @validator("settings")
     def validate_settings(cls, value, values):

@@ -1,5 +1,5 @@
 const IntegrationCard = {
-    props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id'],
+    props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id', 'status', 'status_message'],
     delimiters: ['[[', ']]'],
     computed: {
         reflected_component() {
@@ -14,6 +14,16 @@ const IntegrationCard = {
         },
         logo() {
             return this.reflected_component?.logo_src
+        },
+        circle_class() {
+            switch (this.status) {
+                case window.integration_status.success:
+                    return 'integration_icon_success'
+                case window.integration_status.error:
+                    return 'integration_icon_error'
+                default:
+                    return 'integration_icon_undetermined'
+            }
         }
     },
     methods: {
@@ -27,7 +37,7 @@ const IntegrationCard = {
     template: `
 <div class="card card-row-1 mx-3 integration_card p-2 flex-row">
     <div class="d-flex align-items-center justify-content-center integration_icon_container">
-        <div><img class="integration_icon" :src="logo" /></div>
+        <div><img class="integration_icon" :class="circle_class" :src="logo" /></div>
     </div>
     <div class="d-flex flex-column justify-content-center flex-grow-1">
         <div>
@@ -40,23 +50,39 @@ const IntegrationCard = {
         </div>
     </div>
     <div class="d-flex flex-column justify-content-between">
-        <div class="dropdown dropleft dropdown_action text-right">
-            <button class="btn dropdown-toggle btn-action"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-expanded="false">
-                <i class="fas fa-ellipsis-h"></i>
+        <div class="d-flex justify-content-end align-items-center">
+            <button class="btn btn-icon" 
+                data-toggle="infotip" 
+                data-placement="top" 
+                title="" 
+                :data-original-title="status_message"
+                v-if="status === window.integration_status.error"
+            >
+                <i class="far fa-exclamation-triangle" style="color: var(--text-orange)"></i>
             </button>
-
-            <ul class="dropdown-menu">
-                <li class="dropdown-item" @click="handle_edit">
-                    <i class="fas fa-cog mr-2"></i>Edit
-                </li>
-                <li class="dropdown-item" @click="handle_delete">
-                    <i class="fas fa-trash-alt mr-2"></i>Delete
-                </li>
-            </ul>
+            <i class="fas fa-spinner fa-spin fa-secondary" style="color: var(--basic)"
+                v-else-if="status === window.integration_status.pending"
+            ></i>
+            <div class="dropdown dropleft dropdown_action text-right">
+                <button class="btn dropdown-toggle btn-action"
+                        role="button"
+                        data-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+    
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item" @click="handle_edit">
+                        <i class="fas fa-cog mr-2"></i>Edit
+                    </li>
+                    <li class="dropdown-item" @click="handle_delete">
+                        <i class="fas fa-trash-alt mr-2"></i>Delete
+                    </li>
+                </ul>
+            </div>
+        
         </div>
+        
         <div class="text-right mb-3" style="font-size: small" v-if="is_default">
             <h13 class="badge badge-pill badge-primary text-uppercase">default</h13>
         </div>
