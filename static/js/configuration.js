@@ -199,8 +199,14 @@ vueApp.component('ModalDialog', ModalDialog)
 
 
 
-socket.on("task_creation_failed", msg => {
-    window.onload = function (){
-        showNotify("ERROR", msg);
+socket.on("task_creation", payload => {
+    if (payload['ok']){
+        showNotify("SUCCESS", "Task created successfully")
+        integrationName = payload['name']
+        integrationId = payload['id']
+        imgSrc = payload['img_src']
+        $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
+        return
     }
+    showNotify("ERROR", payload['msg']);
 });

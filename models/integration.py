@@ -56,7 +56,6 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
         settings: dict = self.rpc.call.integrations_process_secrets(
             integration_data=self.to_json(),
         )
-
         Integration.query.filter(
             Integration.id == self.id
         ).update({Integration.settings: settings})
