@@ -269,10 +269,17 @@ class RPC:
         return cloud_regions
 
     @rpc('set_task_id')
-    def set_task_id(self, integration_id, task_id):
+    def set_task_id(self, integration_id: int, task_id: str, status: str = 'success'):
+        # Integration.query.filter(
+        #     Integration.id == integration_id
+        # ).update({Integration.task_id: task_id, Integration.status: status})
+        # return Integration.query.get(integration_id).to_json()
+        log.info('set_task_id called %s', [integration_id, task_id, status])
+
         integration = Integration.query.get(integration_id)
         if not integration:
             return
         integration.task_id = task_id
+        integration.status = status
         integration.commit()
-
+        return integration.to_json()

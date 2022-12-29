@@ -9,31 +9,44 @@ const IntegrationSections = {
     mounted() {
         this.sections = this.initial_sections
         this.$root.custom_data.handle_integrations_update = this.handle_integration_update
-        window.socket.on("task_creation", payload => {
+        window.socket.on("task_creation", async payload => {
             console.log('payload', payload)
-            if (payload['ok']) {
-                showNotify("SUCCESS", "Task created successfully")
-                // integrationName = payload['name']
-                // integrationId = payload['id']
-                // imgSrc = payload['img_src']
-                // $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
-                return
+            // if (payload['ok']) {
+            //     showNotify("SUCCESS", "Task created successfully")
+            //     // integrationName = payload['name']
+            //     // integrationId = payload['id']
+            //     // imgSrc = payload['img_src']
+            //     // $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
+            //     return
+            // }
+            // showNotify("ERROR", payload['msg']);
+
+
+            const integration_section_index = this.sections.findIndex(section => section.name === payload.section)
+            if (integration_section_index) {
+                const integration = this.sections[integration_section_index].integrations.find(i => i.id === payload.id)
+                if (integration) {
+                    Object.assign(integration, payload)
+                } else {
+                    await this.handle_integration_update({section_name: payload.section})
+                    const integration = this.sections[integration_section_index].integrations.find(i => i.id === payload.id)
+                    Object.assign(integration, payload)
+                }
             }
-            showNotify("ERROR", payload['msg']);
-        });
+        })
     },
     methods: {
-        async handle_integration_update(integration) {
-            console.log('integration updated', integration)
+        async handle_integration_update({section_name, ...rest}) {
+            console.log('section updated', section_name, rest)
 
-            const updated_section_data = await this.fetch_section(integration.section_name)
+            const updated_section_data = await this.fetch_section(section_name)
             if (updated_section_data !== undefined) {
-                const integration_section_index = this.sections.findIndex(section => section.name === integration.section_name)
+                const integration_section_index = this.sections.findIndex(section => section.name === section_name)
                 if (integration_section_index) {
                     this.sections[integration_section_index].integrations = updated_section_data
                 }
             }
-            showNotify('SUCCESS')
+            // showNotify('SUCCESS')
         },
         async fetch_integrations(integration_name) {
             const resp = await fetch(`/api/v1/integrations/integrations/${this.$root.project_id}?name=${integration_name}`)
