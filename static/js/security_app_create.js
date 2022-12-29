@@ -267,4 +267,4 @@ const TestIntegrationItem = {
 }
 
 
-vueApp.component('TestIntegrationItem', TestIntegrationItem)
+register_component('TestIntegrationItem', TestIntegrationItem)
