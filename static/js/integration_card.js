@@ -34,6 +34,11 @@ const IntegrationCard = {
             this.reflected_component.handleDelete(this.id)
         },
     },
+    watch: {
+        status_message() {
+            this.$nextTick(() => $('[data-toggle="infotip"]').tooltip('update'))
+        }
+    },
     template: `
 <div class="card card-row-1 mx-3 integration_card p-2 flex-row">
     <div class="d-flex align-items-center justify-content-center integration_icon_container">
@@ -54,7 +59,7 @@ const IntegrationCard = {
             <button class="btn btn-icon" 
                 data-toggle="infotip" 
                 data-placement="top" 
-                title="" 
+                :title="status_message" 
                 :data-original-title="status_message"
                 v-if="status === window.integration_status.error"
             >

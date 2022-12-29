@@ -35,6 +35,7 @@ class API(Resource):
             settings=settings.dict(),
             section=integration.section,
             description=request.json.get('description'),
+            status=request.json.get('status', 'success'),
         )
         db_integration.insert()
         if request.json.get('is_default'):
@@ -60,7 +61,8 @@ class API(Resource):
         return IntegrationPD.from_orm(db_integration).dict(), 200
 
     def delete(self, integration_id: int):
-        Integration.query.filter(Integration.id == integration_id).first().delete()
+        Integration.query.filter(Integration.id == integration_id).delete()
+        Integration.commit()
         # if request.json.get('is_default'):
         #     db_integration.make_default()
-        return 'DELETED', 204
+        return integration_id, 204
