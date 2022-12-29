@@ -199,9 +199,15 @@ vueApp.component('AddIntegrationButton', AddIntegrationButton)
 vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)
 
-// $(document).on('vue_init', () => {
-//     V.custom_data.handle_integrations_update = integration => {
-//         console.log('integration updated', integration)
-//         showNotify('SUCCESS')
-//     }
-// })
+
+socket.on("task_creation", payload => {
+    if (payload['ok']){
+        showNotify("SUCCESS", "Task created successfully")
+        integrationName = payload['name']
+        integrationId = payload['id']
+        imgSrc = payload['img_src']
+        $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
+        return
+    }
+    showNotify("ERROR", payload['msg']);
+});

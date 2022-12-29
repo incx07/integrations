@@ -268,3 +268,11 @@ class RPC:
             } for region in integrations["clouds"]]
         return cloud_regions
 
+    @rpc('set_task_id')
+    def set_task_id(self, integration_id, task_id):
+        integration = Integration.query.get(integration_id)
+        if not integration:
+            return
+        integration.task_id = task_id
+        integration.commit()
+
