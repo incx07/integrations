@@ -18,9 +18,24 @@
 
 .integration_icon {
     font-size: 28px;
-    background-color: #2BD48D;
     border-radius: 50%;
+}
+
+.integration_icon_success {
+    background-color: #2BD48D;
     border: 10px solid #2BD48D;
+    color: #fff;
+}
+
+.integration_icon_undetermined {
+    background-color: grey;
+    border: 10px solid grey;
+    color: #fff;
+}
+
+.integration_icon_error {
+    background-color: var(--text-orange);
+    border: 10px solid var(--text-orange);
     color: #fff;
 }
 

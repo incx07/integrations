@@ -1,3 +1,9 @@
+window.integration_status = {
+    success: 'success',
+    error: 'error',
+    pending: 'pending'
+}
+
 const AddIntegrationButton = {
     delimiters: ['[[', ']]'],
     props: ['integration_name', 'logo', 'display_name'],
@@ -198,10 +204,3 @@ vueApp.component('SecretFieldInput', SecretFieldInput)
 vueApp.component('AddIntegrationButton', AddIntegrationButton)
 vueApp.component('TestConnectionButton', TestConnectionButton)
 vueApp.component('ModalDialog', ModalDialog)
-
-// $(document).on('vue_init', () => {
-//     V.custom_data.handle_integrations_update = integration => {
-//         console.log('integration updated', integration)
-//         showNotify('SUCCESS')
-//     }
-// })
