@@ -9,17 +9,16 @@ const IntegrationSections = {
     mounted() {
         this.sections = this.initial_sections
         this.$root.custom_data.handle_integrations_update = this.handle_integration_update
-        window.socket.on("task_creation", async payload => {
+        window.socket.on('task_creation', async payload => {
             console.log('payload', payload)
-            // if (payload['ok']) {
-            //     showNotify("SUCCESS", "Task created successfully")
-            //     // integrationName = payload['name']
-            //     // integrationId = payload['id']
-            //     // imgSrc = payload['img_src']
-            //     // $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
-            //     return
-            // }
-            // showNotify("ERROR", payload['msg']);
+            payload.ok ?
+                showNotify('SUCCESS', 'Task created successfully') :
+                showNotify('ERROR', payload.msg)
+                // integrationName = payload['name']
+                // integrationId = payload['id']
+                // imgSrc = payload['img_src']
+                // $(`#${integrationName}-${integrationId}-img`).attr('src', imgSrc)
+                // return
 
 
             const integration_section_index = this.sections.findIndex(section => section.name === payload.section)

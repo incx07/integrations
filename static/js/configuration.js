@@ -1,6 +1,5 @@
 window.integration_status = {
     success: 'success',
-    error: 'error',
     pending: 'pending'
 }
 
