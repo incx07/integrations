@@ -62,7 +62,7 @@ const IntegrationCard = {
             <button class="btn btn-icon" 
                 data-toggle="infotip" 
                 data-placement="top" 
-                :title="status" 
+                title="" 
                 :data-original-title="status"
                 v-else-if="status !== window.integration_status.success"
             >
