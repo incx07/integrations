@@ -11,9 +11,7 @@ const IntegrationSections = {
         this.$root.custom_data.handle_integrations_update = this.handle_integration_update
         window.socket.on('task_creation', async payload => {
             console.log('payload', payload)
-            payload.ok ?
-                showNotify('SUCCESS', 'Task created successfully') :
-                showNotify('ERROR', payload.msg)
+            payload.msg && showNotify(payload.ok ? 'SUCCESS' : 'ERROR', payload.msg)
                 // integrationName = payload['name']
                 // integrationId = payload['id']
                 // imgSrc = payload['img_src']
@@ -22,7 +20,7 @@ const IntegrationSections = {
 
 
             const integration_section_index = this.sections.findIndex(section => section.name === payload.section)
-            if (integration_section_index) {
+            if (integration_section_index !== -1) {
                 const integration = this.sections[integration_section_index].integrations.find(i => i.id === payload.id)
                 if (integration) {
                     Object.assign(integration, payload)
@@ -45,7 +43,7 @@ const IntegrationSections = {
                     this.sections[integration_section_index].integrations = updated_section_data
                 }
             }
-            // showNotify('SUCCESS')
+            showNotify('INFO', 'Updated')
         },
         async fetch_integrations(integration_name) {
             const resp = await fetch(`/api/v1/integrations/integrations/${this.$root.project_id}?name=${integration_name}`)
