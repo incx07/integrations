@@ -23,7 +23,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
     section = Column(String(64), unique=False, nullable=False)
     description = Column(String(256), unique=False, nullable=True, default='Default integration')
     task_id = Column(String(256), unique=False, nullable=True)
-    status = Column(String(32), unique=False, nullable=False, default='success')
+    status = Column(String(256), unique=False, nullable=False, default='success')
 
     def make_default(self):
         Integration.query.filter(

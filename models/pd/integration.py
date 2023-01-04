@@ -8,7 +8,7 @@ from .registration import SectionRegistrationForm
 from tools import rpc_tools, secrets_tools, session_project
 
 
-class IntegrationPD(BaseModel):
+class IntegrationBase(BaseModel):
     id: int
     name: str
     section: Union[str, SectionRegistrationForm]
@@ -18,6 +18,11 @@ class IntegrationPD(BaseModel):
     task_id: Optional[str]
     status: Optional[str] = 'success'
 
+    class Config:
+        orm_mode = True
+
+
+class IntegrationPD(IntegrationBase):
     @validator("settings")
     def validate_settings(cls, value, values):
         integration = rpc_tools.RpcMixin().rpc.call.integrations_get_by_name(
@@ -42,9 +47,6 @@ class IntegrationPD(BaseModel):
         if not value:
             return f'Integration #{values["id"]}'
         return value
-
-    class Config:
-        orm_mode = True
 
 
 class SecretField(BaseModel):

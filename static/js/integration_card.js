@@ -1,5 +1,5 @@
 const IntegrationCard = {
-    props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id', 'status', 'status_message'],
+    props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id', 'status'],
     delimiters: ['[[', ']]'],
     computed: {
         reflected_component() {
@@ -19,10 +19,10 @@ const IntegrationCard = {
             switch (this.status) {
                 case window.integration_status.success:
                     return 'integration_icon_success'
-                case window.integration_status.error:
-                    return 'integration_icon_error'
-                default:
+                case window.integration_status.pending:
                     return 'integration_icon_undetermined'
+                default:
+                    return 'integration_icon_error'
             }
         }
     },
@@ -35,7 +35,7 @@ const IntegrationCard = {
         },
     },
     watch: {
-        status_message() {
+        status() {
             this.$nextTick(() => $('[data-toggle="infotip"]').tooltip('update'))
         }
     },
@@ -56,18 +56,18 @@ const IntegrationCard = {
     </div>
     <div class="d-flex flex-column justify-content-between">
         <div class="d-flex justify-content-end align-items-center">
+            <i class="fas fa-spinner fa-spin fa-secondary" style="color: var(--basic)"
+                v-if="status === window.integration_status.pending"
+            ></i>
             <button class="btn btn-icon" 
                 data-toggle="infotip" 
                 data-placement="top" 
-                :title="status_message" 
-                :data-original-title="status_message"
-                v-if="status === window.integration_status.error"
+                :title="status" 
+                :data-original-title="status"
+                v-else-if="status !== window.integration_status.success"
             >
                 <i class="far fa-exclamation-triangle" style="color: var(--text-orange)"></i>
             </button>
-            <i class="fas fa-spinner fa-spin fa-secondary" style="color: var(--basic)"
-                v-else-if="status === window.integration_status.pending"
-            ></i>
             <div class="dropdown dropleft dropdown_action text-right">
                 <button class="btn dropdown-toggle btn-action"
                         role="button"
