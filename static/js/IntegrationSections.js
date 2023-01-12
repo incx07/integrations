@@ -26,8 +26,8 @@ const IntegrationSections = {
                     Object.assign(integration, payload)
                 } else {
                     await this.handle_integration_update({section_name: payload.section})
-                    const integration = this.sections[integration_section_index].integrations.find(i => i.id === payload.id)
-                    Object.assign(integration, payload)
+                    // const integration = this.sections[integration_section_index].integrations.find(i => i.id === payload.id)
+                    // Object.assign(integration, payload)
                 }
             }
         })
