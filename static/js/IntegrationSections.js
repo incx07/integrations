@@ -39,7 +39,7 @@ const IntegrationSections = {
             const updated_section_data = await this.fetch_section(section_name)
             if (updated_section_data !== undefined) {
                 const integration_section_index = this.sections.findIndex(section => section.name === section_name)
-                if (integration_section_index) {
+                if (integration_section_index > -1) {
                     this.sections[integration_section_index].integrations = updated_section_data
                 }
             }
