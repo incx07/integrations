@@ -9,17 +9,9 @@
                     <h9>Integrate services into the project</h9>
                 </div>
                 <div class="card-body">
-{#                    <h13></h13>#}
                 </div>
             </div>
         </div>
-{#    {{ integrations_section_list | list_pd_to_json}}#}
-{#        <h1>new variant</h1>#}
-        <button class="btn btn-basic"
-                @click="custom_data.handle_integrations_update({name: 'reporter_email', section_name: 'reporters'})"
-        >TEST BUTTON UPDATE REPORTERS</button>
-        <br />
-{#    {{ all_sections | tojson }}#}
     <Integration-Sections
         @register="register"
         instance_name="integration_sections"
@@ -31,35 +23,5 @@
             </template>
         {% endfor %}
     </Integration-Sections>
-
-{#    <br />#}
-{#    <h1>old variant</h1>#}
-{#    <br />#}
-{#        {% for section in integrations_section_list %}#}
-{#            {% set section_integrations = existing_integrations.get(section.name, []) %}#}
-{#            <div class="row section_row">#}
-{#                <div class="card card-x shadow-none">#}
-{#                    <div class="card-header">#}
-{#                        <h3 class="section-name">{{ section.name }}</h3>#}
-{#                        <h9>{{ section.integration_description }}</h9>#}
-{#                    </div>#}
-{#                    <div class="card-body">#}
-{#                        <div class="row d-flex section_cards">#}
-{#                            {% for i in section_integrations %}#}
-{#                                <Integration-Card#}
-{#                                    v-bind="{{ i.json() }}"#}
-{#                                ></Integration-Card>#}
-{#                                {{ template_slot("integration_card_%s" | format(i.name), payload=i) | safe }}#}
-{#                                <hr style="transform: rotate(90deg) translate(50%, 50%); width: 80px;"/>#}
-{#                            {% endfor %}#}
-{#                        </div>#}
-{#                        <div class="row d-flex mt-3 section_create">#}
-{#                            {{ template_slot("integrations_%s_content" | format(section.name)) | safe }}#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endfor %}#}
-
     </div>
 </div>
