@@ -35,7 +35,7 @@ class RPC:
         return self.integrations
 
     @rpc('get_project_integrations')
-    def get_project_integrations(self, project_id: int) -> dict:
+    def get_project_integrations(self, project_id: int, group_by_section: bool = True) -> dict:
         results = Integration.query.filter(
             Integration.project_id == project_id,
             Integration.name.in_(self.integrations.keys())
@@ -45,10 +45,14 @@ class RPC:
         ).order_by(
             asc(Integration.section),
             desc(Integration.is_default),
+            asc(Integration.name),
             desc(Integration.id)
         ).all()
 
         results = parse_obj_as(List[IntegrationPD], results)
+
+        if not group_by_section:
+            return results
 
         def reducer(accum: dict, new_value: IntegrationPD) -> dict:
             accum[new_value.section.name].append(new_value)
@@ -57,7 +61,7 @@ class RPC:
         return reduce(reducer, results, defaultdict(list))
 
     @rpc('get_project_integrations_by_name')
-    def get_project_integrations_by_name(self, project_id: int, integration_name: str) -> list:
+    def get_project_integrations_by_name(self, project_id: int, integration_name: str) -> List[IntegrationPD]:
         if integration_name not in self.integrations.keys():
             return []
         results = Integration.query.filter(
@@ -66,6 +70,22 @@ class RPC:
         ).order_by(
             asc(Integration.section),
             desc(Integration.is_default),
+            asc(Integration.name),
+            desc(Integration.id)
+        ).all()
+        results = parse_obj_as(List[IntegrationPD], results)
+        return results
+
+    @rpc('get_project_integrations_by_section')
+    def get_project_integrations_by_section(self, project_id: int, section_name: str) -> List[IntegrationPD]:
+        if section_name not in self.sections.keys():
+            return []
+        results = Integration.query.filter(
+            Integration.project_id == project_id,
+            Integration.section == section_name
+        ).order_by(
+            desc(Integration.is_default),
+            asc(Integration.name),
             desc(Integration.id)
         ).all()
         results = parse_obj_as(List[IntegrationPD], results)
@@ -248,3 +268,13 @@ class RPC:
             } for region in integrations["clouds"]]
         return cloud_regions
 
+    @rpc('update_attrs')
+    def update_attrs(self, integration_id: int, update_dict: dict, return_result: bool = False) -> Optional[dict]:
+        log.info('update_attrs called %s', [integration_id, update_dict])
+        update_dict.pop('id', None)
+        Integration.query.filter(
+            Integration.id == integration_id
+        ).update(update_dict)
+        Integration.commit()
+        if return_result:
+            return Integration.query.get(integration_id).to_json()

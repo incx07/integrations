@@ -1,3 +1,8 @@
+window.integration_status = {
+    success: 'success',
+    pending: 'pending'
+}
+
 const AddIntegrationButton = {
     delimiters: ['[[', ']]'],
     props: ['integration_name', 'logo', 'display_name'],
@@ -56,20 +61,24 @@ const TestConnectionButton = {
         }
     },
     methods: {
-        test_connection() {
+        async test_connection() {
             this.$emit('update:is_fetching', true)
-            fetch(this.apiPath, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.body_data)
-            }).then(response => {
-                // this.is_fetching = false
-                this.$emit('update:is_fetching', false)
-                this.status = response.status
-                if (!response.ok) {
-                    this.$emit('handleError', response)
+            try {
+                const resp = await fetch(this.apiPath, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.body_data)
+                })
+                this.status = resp.status
+                if (!resp.ok) {
+                    this.$emit('handleError', await resp.json())
                 }
-            })
+            } catch (e) {
+                console.error(e)
+                showNotify('WARNING', 'Test not successful')
+            } finally {
+                this.$emit('update:is_fetching', false)
+            }
         },
     }
 }
@@ -84,7 +93,7 @@ const ModalDialog = {
         <div class="modal-header">
             <div class="d-flex align-items-center w-100 justify-content-between">
                 <div>
-                    <h2>[[ display_name ]] integration</h2>
+                    <h2>[[ display_name ]]</h2>
                     <p v-if="id">
                         <h13>id: [[ id ]]</h13>
                     </p>
@@ -106,9 +115,9 @@ const ModalDialog = {
         <div class="modal-body">
             <slot name="body"></slot>
             
-            <div class="form-group">
+            <div>
                 <label class="w-100">
-                    <h9>Description</h9>
+                    <p class="font-h5 font-semibold">Description</p>
                     <textarea class="form-control" rows="1" placeholder="Optional"
                         :value="description"
                         @input="$emit('update:description', $event.target.value)">
@@ -116,15 +125,13 @@ const ModalDialog = {
 
                 </label>
             </div>
-            <div>
+            <div class="mt-2">
                 <label class="custom-checkbox d-flex align-items-center">
                     <input class="mr-1" type="checkbox"
                             :checked="Boolean(is_default)"
                             @input="$emit('update:is_default', $event.target.checked)"
                            >
-                    <h9>
-                        Set as default
-                    </h9>
+                    <p class="font-h5 font-semibold">Set as default</p>
                 </label>
             </div>
             
