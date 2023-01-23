@@ -24,6 +24,6 @@ class API(Resource):
 
         check_connection_response = settings.check_connection()
         if not request.json.get('save_action'):
-            if check_connection_response:
+            if check_connection_response is True:
                 return 'OK', 200
-            return jsonify([{'loc': ['check_connection'], 'msg': 'Connection failed'}]), 400
+            return [{'loc': ['check_connection'], 'msg': check_connection_response}], 400
