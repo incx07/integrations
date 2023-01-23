@@ -27,7 +27,7 @@ const AddIntegrationButton = {
 const TestConnectionButton = {
     delimiters: ['[[', ']]'],
     props: ['error', 'apiPath', 'is_fetching', 'body_data'],
-    emits: ['update:is_fetching', 'handleError'],
+    emits: ['update:is_fetching', 'handleError', 'update:error'],
     data() {
         return {
             status: 0,
@@ -43,6 +43,9 @@ const TestConnectionButton = {
                 return 'btn-secondary'
             }
         },
+        show_error() {
+            return (this.test_connection_class === 'btn-warning')
+        }
     },
     template: `
         <button type="button" class="btn btn-sm mt-3"
@@ -51,7 +54,7 @@ const TestConnectionButton = {
         >
             Test connection
         </button>
-        <div class="invalid-feedback">[[ error ]]</div>
+        <div class="invalid-feedback" v-if="show_error">[[ error ]]</div>
     `,
     watch: {
         is_fetching(newState, oldState) {
@@ -61,24 +64,19 @@ const TestConnectionButton = {
         }
     },
     methods: {
-        async test_connection() {
+        test_connection() {
             this.$emit('update:is_fetching', true)
-            try {
-                const resp = await fetch(this.apiPath, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(this.body_data)
-                })
-                this.status = resp.status
-                if (!resp.ok) {
-                    this.$emit('handleError', await resp.json())
-                }
-            } catch (e) {
-                console.error(e)
-                showNotify('WARNING', 'Test not successful')
-            } finally {
+            fetch(this.apiPath, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(this.body_data)
+            }).then(response => {
                 this.$emit('update:is_fetching', false)
-            }
+                this.status = response.status
+                if (!response.ok) {
+                    this.$emit('handleError', response)
+                }
+            })
         },
     }
 }
@@ -162,6 +160,9 @@ const SecretFieldInput = {
             }
         }
     },
+    mounted() {
+        this.value = this.modelValue
+    },
     template: `
     <div class="custom-input__tabs">
         <input :type="from_secrets ? 'text' : 'password'"
@@ -170,22 +171,22 @@ const SecretFieldInput = {
            v-model="value"
            style="padding-left: 140px"
         >
-        <ul class="input-tabs nav nav-pills" role="tablist">
+        <ul class="input-tabs nav nav-pills" role="tablist" >
             <li class="nav-item" role="presentation">
-                <a class="font-h6 font-semibold active" 
+                <a class="font-h6 font-semibold"
+                 :class="{'active': from_secrets}"
                 href=""
                 data-toggle="pill" 
                 role="tab" 
-                :aria-selected="from_secrets"
                 @click="from_secrets = true"
                 >Secret</a>
             </li>
             <li class="nav-item" role="presentation" >
                 <a class="font-h6 font-semibold" 
+                :class="{'active': !from_secrets}"
                 href="" 
                 data-toggle="pill" 
                 role="tab" 
-                :aria-selected="from_secrets"
                 @click="from_secrets = false"
                 >Plain</a>
             </li>
