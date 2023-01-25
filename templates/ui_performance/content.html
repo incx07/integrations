@@ -3,14 +3,10 @@
 <div class="section integration_section">
     <div class="row">
         <div class="col">
-            <h5 class="integration_section_name">
+            <p class="integration_section_name font-uppercase font-h5 font-semibold">
                 {{- processing.name | capitalize -}}
-            </h5>
-            <p>
-                <h13>
-                    {{- processing.test_planner_description | safe -}}
-                </h13>
             </p>
+            <p class="font-h6 font-weight-400">{{- processing.test_planner_description | safe -}}</p>
         </div>
     </div>
     <div class="row d-flex mt-2" id="ui_performance_processing_section">
@@ -24,14 +20,10 @@
     <div class="section integration_section">
         <div class="row">
             <div class="col">
-                <h5 class="integration_section_name">
+                <p class="integration_section_name font-uppercase font-h5 font-semibold">
                     {{- reporters.name | capitalize -}}
-                </h5>
-                <p>
-                    <h13>
-                        {{- reporters.test_planner_description | safe -}}
-                    </h13>
                 </p>
+                <p class="font-h6 font-weight-400">{{- reporters.test_planner_description | safe -}}</p>
             </div>
         </div>
         <div class="row d-flex mt-2" id="ui_performance_reporters_section">
