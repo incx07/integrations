@@ -61,20 +61,21 @@ const IntegrationSections = {
         }
     },
     template: `
-        <div class="row section_row" v-for="section in sections">
+        <div class="section_row px-8" v-for="section in sections">
             <div class="card card-x shadow-none">
-                <div class="card-header">
-                    <h3 class="section-name">[[ section.name ]]</h3>
-                    <h9>[[ section.integration_description ]]</h9>
+                <div class="pt-6 pb-2">
+                    <p class="font-h5 font-bold font-uppercase">[[ section.name ]]</p>
+                    <p class="font-h6 font-weight-400 text-gray-700">[[ section.integration_description ]]</p>
+                    <p class="font-h6 font-semibold text-gray-600 mt-4">LOCAL:</p>
                 </div>
-                <div class="card-body">
-                    <div class="row d-flex section_cards">
+                <div>
+                    <div class="d-flex section_cards gap-4">
                         <Integration-Card
                             v-for="integration in section.integrations"
                             v-bind="integration"
                         ></Integration-Card>
                     </div>
-                    <div class="row d-flex mt-3 section_create">
+                    <div class="row d-flex section_create">
                         <slot :name="'section_create_' + section.name"></slot>
                     </div>
                 </div>
