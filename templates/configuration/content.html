@@ -1,17 +1,9 @@
 {% set integrations_section_list = integrations_section_list | default([]) %}
 {% set existing_integrations = existing_integrations | default({}) %}
-<div class="card card-12">
-    <div class="card-body">
-        <div class="row border-bottom">
-            <div class="card card-x shadow-none">
-                <div class="card-header">
-                    <h1>Integrations</h1>
-                    <h9>Integrate services into the project</h9>
-                </div>
-                <div class="card-body">
-                </div>
-            </div>
-        </div>
+<div class="card card-12 pb-8 mb-3">
+    <div class="border-b px-8 py-6">
+        <p class="font-h4 font-bold">Integrations</p>
+    </div>
     <Integration-Sections
         @register="register"
         instance_name="integration_sections"
@@ -23,5 +15,4 @@
             </template>
         {% endfor %}
     </Integration-Sections>
-    </div>
 </div>
