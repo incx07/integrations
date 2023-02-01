@@ -61,7 +61,7 @@ const IntegrationSections = {
         }
     },
     template: `
-        <div class="section_row px-8" v-for="section in sections">
+        <div class="section_row px-8" v-for="section in sections.filter(s => s.name !== 'processing')">
             <div class="card card-x shadow-none">
                 <div class="pt-6 pb-2">
                     <p class="font-h5 font-bold font-uppercase">[[ section.name ]]</p>

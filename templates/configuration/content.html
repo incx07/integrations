@@ -9,7 +9,7 @@
         instance_name="integration_sections"
         :initial_sections='{{ all_sections | tojson }}'
     >
-        {% for section in all_sections %}
+        {% for section in all_sections if section['name'] | lower != 'processing' %}
             <template #section_create_{{ section['name'] }}>
                 {{ template_slot("integrations_%s_content" | format(section['name'])) | safe }}
             </template>
