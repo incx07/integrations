@@ -132,7 +132,7 @@ const TestIntegrationItem = {
     <div class="card card-row-1">
         <div class="card-header">
             <div class="d-flex align-items-center">
-                <h9 class="flex-grow-1" style="line-height: 24px">[[ display_name ]]</h9>
+                <p class="flex-grow-1 font-h5 font-semibold" style="line-height: 24px">[[ display_name ]]</p>
                 <button aria-expanded="false" 
                         type="button"
                         class="btn btn-24 btn-action"
@@ -159,8 +159,8 @@ const TestIntegrationItem = {
                 </label>
             </div>
         </div>
-        <div class="row">
-            <div class="collapse col-12 mb-3 pl-0" :id="selector_id">
+        <div>
+            <div class="collapse" style="padding-bottom: 20px" :id="selector_id">
                 <div v-if="this.selected_integration !== 'quality_gate'" class="select-validation"
                     :class="{'invalid-select': this.errors.id}">
                     <select class="selectpicker bootstrap-select__b" data-style="btn"
