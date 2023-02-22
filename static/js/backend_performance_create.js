@@ -128,8 +128,7 @@ const TestIntegrationItem = {
         }
     },
     template: `
-<div class="col-6">
-    <div class="card card-row-1">
+    <div class="card card-row-1 card-x m-auto">
         <div class="card-header">
             <div class="d-flex align-items-center">
                 <p class="flex-grow-1 font-h5 font-semibold" style="line-height: 24px">[[ display_name ]]</p>
@@ -200,7 +199,6 @@ const TestIntegrationItem = {
             </div>
         </div>
     </div>
-</div>
     `,
 }
 
