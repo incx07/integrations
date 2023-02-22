@@ -9,7 +9,7 @@
             <p class="font-h6 font-weight-400">{{- processing.test_planner_description | safe -}}</p>
         </div>
     </div>
-    <div class="row d-flex mt-4" id="backend_performance_processing_section">
+    <div class="d-grid grid-column-2 gap-50 mt-4" id="backend_performance_processing_section">
         {{ template_slot("backend_performance_processing_content", payload={
                         'instance_name_prefix': instance_name_prefix
                         }) | safe }}
@@ -28,7 +28,7 @@
                 </p>
             </div>
         </div>
-        <div class="row d-flex mt-4" id="backend_performance_reporters_section">
+        <div class="d-grid grid-column-2 gap-50 mt-4" id="backend_performance_reporters_section">
             {{ template_slot("backend_performance_reporters_content", payload={
                             'instance_name_prefix': instance_name_prefix
                             }) | safe }}
