@@ -191,11 +191,10 @@ const TestIntegrationItem = {
         }
     },
     template: `
-<div class="col-6">
-    <div class="card card-row-1">
+    <div class="card card-row-1 card-x mx-auto">
         <div class="card-header">
             <div class="d-flex align-items-center">
-                <h9 class="flex-grow-1" style="line-height: 24px">[[ display_name ]]</h9>
+                <p class="flex-grow-1 font-h5 font-semibold" style="line-height: 24px">[[ display_name ]]</p>
                 <button aria-expanded="false" 
                         type="button"
                         class="btn btn-24 btn-action"
@@ -203,7 +202,6 @@ const TestIntegrationItem = {
                         :data-target="is_selected && '#' + settings_id" 
                         v-if="!!this.$slots.settings"
                         :class="!is_selected && 'disabled'"
-                        
                         >
                     <i class="fas fa-cog"></i>
                 </button>
@@ -217,13 +215,13 @@ const TestIntegrationItem = {
                            v-model="is_selected"
                            :disabled="project_integrations.length === 0 && !errors.id"
                            />
-<!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
                     <span class="custom-toggle_slider round"></span>
                 </label>
             </div>
         </div>
-        <div class="row">
-            <div class="collapse col-12 mb-3 pl-0" :id="selector_id">
+        <div>
+            <div class="collapse pb-20" :id="selector_id">
+                <p class="font-h6 font-semibold mb-1">Integrated account</p>
                 <div class="select-validation" 
                     :class="{'invalid-select': this.errors.id}">
                     <select class="selectpicker bootstrap-select__b" data-style="btn"
@@ -262,7 +260,6 @@ const TestIntegrationItem = {
             </div>
         </div>
     </div>
-</div>
     `,
 }
 
