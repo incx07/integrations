@@ -128,7 +128,7 @@ const TestIntegrationItem = {
         }
     },
     template: `
-    <div class="card card-row-1 card-x m-auto">
+    <div class="card card-row-1 card-x mx-auto">
         <div class="card-header">
             <div class="d-flex align-items-center">
                 <p class="flex-grow-1 font-h5 font-semibold" style="line-height: 24px">[[ display_name ]]</p>
@@ -139,7 +139,6 @@ const TestIntegrationItem = {
                         :data-target="is_selected && '#' + settings_id" 
                         v-if="!!this.$slots.settings"
                         :class="!is_selected && 'disabled'"
-                        
                         >
                     <i class="fas fa-cog"></i>
                 </button>
@@ -153,13 +152,12 @@ const TestIntegrationItem = {
                            v-model="is_selected"
                            :disabled="project_integrations.length === 0 && !errors.id"
                            />
-<!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
                     <span class="custom-toggle_slider round"></span>
                 </label>
             </div>
         </div>
         <div>
-            <div class="collapse" style="padding-bottom: 20px" :id="selector_id">
+            <div class="collapse pb-20" :id="selector_id">
                 <p class="font-h6 font-semibold mb-1">Integrated account</p>
                 <div v-if="this.selected_integration !== 'quality_gate'" class="select-validation" 
                     :class="{'invalid-select': this.errors.id}">
