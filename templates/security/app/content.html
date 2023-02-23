@@ -2,17 +2,15 @@
     <div class="section integration_section">
         <div class="row">
             <div class="col">
-                <h5 class="integration_section_name">
+                <p class="font-h5 font-bold font-uppercase integration_section_name">
                     {{- section.name | capitalize -}}
-                </h5>
-                <p>
-                    <h13>
+                </p>
+                <p class="font-h6 font-weight-400">
                         {{- section.test_planner_description | safe -}}
-                    </h13>
                 </p>
             </div>
         </div>
-        <div class="row d-flex mt-2" id={{ "security_%s_section" | format(section.name) }}>
+        <div class="d-grid grid-column-2 gap-50 mt-4 grid-items-start" id={{ "security_%s_section" | format(section.name) }}>
             {{ template_slot("security_%s_content" | format(section.name)) | safe }}
         </div>
     </div>
