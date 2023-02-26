@@ -38,17 +38,9 @@ $(() => {
         set: values => {
             if (values) {
                 console.debug('SET integrations', values)
-                // {
-                //     scanners: {
-                //         qualys:
-                //         {
-                //             id: "44"
-                //         }
-                //     }
-                // }
                 Object.keys(values).forEach(section => {
                     Object.keys(values[section]).forEach(integrationItem => {
-                        const dataCallbackName = `${section}_${integrationItem}`
+                        const dataCallbackName = `${section}_${integrationItem}`         
                         if (window[dataCallbackName]) {
                             window[dataCallbackName].set_data(values[section][integrationItem])
                         } else {
@@ -268,3 +260,64 @@ const TestIntegrationItem = {
 
 
 register_component('TestIntegrationItem', TestIntegrationItem)
+
+
+
+const TestIntegrationItemSAST = {
+    delimiters: ['[[', ']]'],
+    props: ['integration_name', 'display_name'],
+    data() {
+        return {
+            is_selected: false,
+        }
+    },
+    computed: {
+        integration_data() {
+            return this.is_selected
+        }
+    },
+    methods: {
+        clear_data() {
+            this.is_selected = false
+        },
+        set_data(value) {
+            this.is_selected = value
+        },
+    },
+    template: `<div class="col-6">
+    <div class="card card-row-1">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h9 class="flex-grow-1" style="line-height: 24px">[[ display_name ]]</h9>
+                <button aria-expanded="false" 
+                        type="button"
+                        class="btn btn-24 btn-action"
+                        :data-target="is_selected && '#' + settings_id" 
+                        v-if="!!this.$slots.settings"
+                        :class="!is_selected && 'disabled'"
+                        
+                        >
+                    <i class="fas fa-cog"></i>
+                </button>
+                <label class="custom-toggle">
+                    <input aria-expanded="false" type="checkbox" v-model="is_selected"/>
+                    <span class="custom-toggle_slider round"></span>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <slot 
+                name="selector"
+                :on_set_data="set_data" 
+                :on_clear_data="clear_data"
+                :integration_data="integration_data"
+                :is_selected="is_selected"
+            ></slot>
+        </div>
+    </div>
+</div>
+    `,
+}
+
+
+register_component('TestIntegrationItemSast', TestIntegrationItemSAST)
