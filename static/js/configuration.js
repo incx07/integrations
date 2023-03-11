@@ -12,14 +12,14 @@ const AddIntegrationButton = {
         }
     },
     template: `
-        <div class="btn btn-action btn-lg d-flex align-items-center m-1 integration_add"
+        <div class="btn-action d-flex align-items-center integration_add gap-2"
              data-toggle="modal"
              :data-target="modal_target"
         >
-            <div><i class="fa fa-plus"></i></div>
+            <div><i class="icon__18x18 icon-create-element"></i></div>
             <div v-if="logo" v-html="logo"></div>
             <slot v-else></slot>
-            <div>[[ display_name ]]</div>
+            <p class="font-h5 font-semibold text-gray-600">[[ display_name ]]</p>
         </div>
     `
 }
@@ -91,16 +91,13 @@ const ModalDialog = {
         <div class="modal-header">
             <div class="d-flex align-items-center w-100 justify-content-between">
                 <div>
-                    <h2>[[ display_name ]]</h2>
-                    <p v-if="id">
-                        <h13>id: [[ id ]]</h13>
-                    </p>
+                    <p class="font-h3 font-bold">[[ display_name ]]</p>
                 </div>
                 <div class="d-flex">
                     <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
                         Cancel
                     </button>
-                    <button type="button" class="btn btn-sm btn-secondary ml-1"
+                    <button type="button" class="btn btn-sm btn-secondary ml-2"
                             :class="{disabled: is_fetching, updating: is_fetching}"
                             @click.prevent="id ? $emit('update') : $emit('create')"
                     >
@@ -112,25 +109,27 @@ const ModalDialog = {
 
         <div class="modal-body">
             <slot name="body"></slot>
-            
-            <div>
-                <label class="w-100">
-                    <p class="font-h5 font-semibold">Description</p>
-                    <textarea class="form-control" rows="1" placeholder="Optional"
-                        :value="description"
-                        @input="$emit('update:description', $event.target.value)">
-                    </textarea>
-
-                </label>
-            </div>
-            <div class="mt-2">
-                <label class="custom-checkbox d-flex align-items-center">
-                    <input class="mr-1" type="checkbox"
-                            :checked="Boolean(is_default)"
-                            @input="$emit('update:is_default', $event.target.checked)"
-                           >
-                    <p class="font-h5 font-semibold">Set as default</p>
-                </label>
+            <div class="form-group">
+                <div>
+                    <label class="w-100">
+                        <p class="font-h5 font-semibold">Description<span class="text-gray-600 font-h6 font-weight-400 ml-1">(optional)</span></p>
+                        <p class="font-h6 font-weight-400 mb-2">You may specify the name of integration to differ from similar ones</p>
+                        <textarea class="form-control" rows="1"
+                            :value="description"
+                            @input="$emit('update:description', $event.target.value)">
+                        </textarea>
+    
+                    </label>
+                </div>
+                <div class="mt-3">
+                    <label class="custom-checkbox d-flex align-items-center">
+                        <input class="mr-2.5" type="checkbox"
+                                :checked="Boolean(is_default)"
+                                @input="$emit('update:is_default', $event.target.checked)"
+                               >
+                        <p class="font-h5 font-semibold">Set as default</p>
+                    </label>
+                </div>
             </div>
             
             <slot name="footer"></slot>

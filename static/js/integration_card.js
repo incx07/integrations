@@ -40,25 +40,17 @@ const IntegrationCard = {
         }
     },
     template: `
-<div class="card card-row-1 mx-3 integration_card p-2 flex-row">
-    <div class="d-flex align-items-center justify-content-center integration_icon_container">
-        <div><img class="integration_icon" :class="circle_class" :src="logo" /></div>
+<div class="card card-row-1 integration_card p-4 flex-row mb-3">
+    <img class="integration_icon h-12 w-12 object-contain mr-3" :class="circle_class" :src="logo">
+    <div class="d-flex flex-column flex-grow-1 justify-content-between">
+        <p class="font-h4 font-bold">[[ display_name ]]</p>
+        <p class="font-h6 font-weight-400 integration_description">[[ description ]]</p>
     </div>
-    <div class="d-flex flex-column justify-content-center flex-grow-1">
-        <div>
-            <h3>
-                [[ display_name ]]
-            </h3>
-        </div>
-        <div>
-            <h13 class="integration_description">[[ description ]]</h13>
-        </div>
-    </div>
-    <div class="d-flex flex-column justify-content-between">
+    <div class="d-flex flex-column justify-content-between align-items-end">
         <div class="d-flex justify-content-end align-items-center">
-            <i class="fas fa-spinner fa-spin fa-secondary" style="color: var(--basic)"
-                v-if="status === window.integration_status.pending"
-            ></i>
+            <div class="badge-grey mr-2" v-if="is_default">
+                <p class="font-h6 font-weight-400">Default</p>
+            </div>
             <button class="btn btn-icon" 
                 data-toggle="infotip" 
                 data-placement="top" 
@@ -69,28 +61,24 @@ const IntegrationCard = {
                 <i class="far fa-exclamation-triangle" style="color: var(--text-orange)"></i>
             </button>
             <div class="dropdown dropleft dropdown_action text-right">
-                <button class="btn dropdown-toggle btn-action"
-                        role="button"
+                <button class="btn btn-default btn-xs btn-table btn-icon__xs"
                         data-toggle="dropdown"
                         aria-expanded="false">
-                    <i class="fas fa-ellipsis-h"></i>
+                    <i class="icon__18x18 icon-menu-dots"></i>
                 </button>
     
                 <ul class="dropdown-menu">
-                    <li class="dropdown-item" @click="handle_edit">
-                        <i class="fas fa-cog mr-2"></i>Edit
+                    <li class="dropdown-item d-flex align-items-center" @click="handle_edit">
+                        <i class="icon__18x18 icon-edit icon__strict-color mr-2"></i>
+                        <span>Edit</span>
                     </li>
-                    <li class="dropdown-item" @click="handle_delete">
-                        <i class="fas fa-trash-alt mr-2"></i>Delete
+                    <li class="dropdown-item d-flex align-items-center" @click="handle_delete">
+                        <i class="icon__18x18 icon-delete icon__strict-color mr-2"></i>Delete
                     </li>
                 </ul>
             </div>
-        
         </div>
-        
-        <div class="text-right mb-3" style="font-size: small" v-if="is_default">
-            <h13 class="badge badge-pill badge-primary text-uppercase">default</h13>
-        </div>
+        <i class="preview-loader mr-1" v-if="status === window.integration_status.pending"></i>
     </div>
 </div>
 `

@@ -3,17 +3,13 @@
 <div class="section integration_section">
     <div class="row">
         <div class="col">
-            <h5 class="integration_section_name">
+            <p class="font-h5 font-bold font-uppercase integration_section_name">
                 {{- processing.name | capitalize -}}
-            </h5>
-            <p>
-                <h13>
-                    {{- processing.test_planner_description | safe -}}
-                </h13>
             </p>
+            <p class="font-h6 font-weight-400">{{- processing.test_planner_description | safe -}}</p>
         </div>
     </div>
-    <div class="row d-flex mt-2" id="backend_performance_processing_section">
+    <div class="d-grid grid-column-2 gap-50 grid-items-start mt-4" id="backend_performance_processing_section">
         {{ template_slot("backend_performance_processing_content", payload={
                         'instance_name_prefix': instance_name_prefix
                         }) | safe }}
@@ -24,17 +20,15 @@
     <div class="section integration_section">
         <div class="row">
             <div class="col">
-                <h5 class="integration_section_name">
+                <p class="font-h5 font-bold font-uppercase integration_section_name">
                     {{- reporters.name | capitalize -}}
-                </h5>
-                <p>
-                    <h13>
+                </p>
+                <p class="font-h6 font-weight-400">
                         {{- reporters.test_planner_description | safe -}}
-                    </h13>
                 </p>
             </div>
         </div>
-        <div class="row d-flex mt-2" id="backend_performance_reporters_section">
+        <div class="d-grid grid-column-2 gap-50 grid-items-start mt-4" id="backend_performance_reporters_section">
             {{ template_slot("backend_performance_reporters_content", payload={
                             'instance_name_prefix': instance_name_prefix
                             }) | safe }}
