@@ -1,4 +1,4 @@
 <script src="{{ url_for('integrations.static', filename='js/security_code_create.js') }}"></script>
 {% for section in integrations_section_list | default([]) %}
-    {{ template_slot("security_sast_%s_scripts" | format(section.name)) | safe }}
+    {{ template_slot("security_%s_scripts" | format(section.name)) | safe }}
 {% endfor %}

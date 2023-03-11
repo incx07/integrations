@@ -10,7 +10,6 @@ const IntegrationSections = {
         this.sections = this.initial_sections
         this.$root.custom_data.handle_integrations_update = this.handle_integration_update
         window.socket.on('task_creation', async payload => {
-            console.log('payload', payload)
             payload.msg && showNotify(payload.ok ? 'SUCCESS' : 'ERROR', payload.msg)
                 // integrationName = payload['name']
                 // integrationId = payload['id']
@@ -33,6 +32,9 @@ const IntegrationSections = {
         })
     },
     methods: {
+        pretifyName(value){
+            return value.replace('_', " ")
+        },
         async handle_integration_update({section_name, ...rest}) {
             console.log('section updated', section_name, rest)
 
@@ -64,7 +66,7 @@ const IntegrationSections = {
         <div class="row section_row" v-for="section in sections">
             <div class="card card-x shadow-none">
                 <div class="card-header">
-                    <h3 class="section-name">[[ section.name ]]</h3>
+                    <h3 class="section-name">[[ pretifyName(section.name) ]]</h3>
                     <h9>[[ section.integration_description ]]</h9>
                 </div>
                 <div class="card-body">
