@@ -12,7 +12,7 @@ const AddIntegrationButton = {
         }
     },
     template: `
-        <div class="btn-action d-flex align-items-center integration_add gap-2"
+        <div class="btn-action d-flex align-items-center integration_add gap-2 my-1"
              data-toggle="modal"
              :data-target="modal_target"
         >
