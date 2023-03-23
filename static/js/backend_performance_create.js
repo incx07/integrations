@@ -158,7 +158,7 @@ const TestIntegrationItem = {
         </div>
         <div>
             <div class="collapse pb-20" :id="selector_id">
-                <p class="font-h6 font-semibold mb-1">Integrated account</p>
+                <p v-if="this.selected_integration !== 'quality_gate'" class="font-h6 font-semibold mb-1">Integrated account</p>
                 <div v-if="this.selected_integration !== 'quality_gate'" class="select-validation" 
                     :class="{'invalid-select': this.errors.id}">
                     <select class="selectpicker bootstrap-select__b" data-style="btn"
