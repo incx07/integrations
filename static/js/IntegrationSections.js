@@ -63,7 +63,7 @@ const IntegrationSections = {
         }
     },
     template: `
-        <div class="section_row px-8" v-for="section in sections.filter(s => s.name !== 'processing')">
+        <div class="section_row px-8 mb-3" v-for="section in sections.filter(s => s.name !== 'processing')">
             <div class="card card-x shadow-none">
                 <div class="pt-6 pb-2">
                     <p class="font-h5 font-bold font-uppercase">[[ pretifyName(section.name) ]]</p>
@@ -71,7 +71,7 @@ const IntegrationSections = {
                     <p class="font-h6 font-semibold text-gray-600 mt-4">LOCAL:</p>
                 </div>
                 <div>
-                    <div class="d-flex section_cards gap-4">
+                    <div class="d-grid section_cards gap-4 grid-column-4">
                         <Integration-Card
                             v-for="integration in section.integrations"
                             v-bind="integration"

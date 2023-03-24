@@ -40,7 +40,7 @@ const IntegrationCard = {
         }
     },
     template: `
-<div class="card card-row-1 integration_card p-4 flex-row mb-3">
+<div class="card card-row-1 integration_card p-4 flex-row">
     <img class="integration_icon h-12 w-12 object-contain mr-3" :class="circle_class" :src="logo">
     <div class="d-flex flex-column flex-grow-1 justify-content-between">
         <p class="font-h4 font-bold">[[ display_name ]]</p>
