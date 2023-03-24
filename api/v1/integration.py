@@ -11,7 +11,9 @@ from ...models.pd.integration import IntegrationPD
 class API(Resource):
     url_params = [
         '<string:integration_name>',
-        '<int:integration_id>'
+        '<string:mode>/<string:integration_name>',
+        '<int:integration_id>',
+        '<string:mode>/<int:integration_id>',
     ]
 
     def __init__(self, module):
@@ -32,6 +34,7 @@ class API(Resource):
         db_integration = Integration(
             name=integration_name,
             project_id=request.json.get('project_id'),
+            # mode=request.json.get('mode', 'default'),
             settings=settings.dict(),
             section=integration.section,
             description=request.json.get('description'),

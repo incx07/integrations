@@ -11,7 +11,7 @@ from ..models.integration import Integration
 from ..models.pd.integration import IntegrationPD, SecretField
 from ..models.pd.registration import RegistrationForm, SectionRegistrationForm
 
-from tools import rpc_tools, secrets_tools
+from tools import rpc_tools, VaultClient
 
 from pylon.core.tools import web
 
@@ -227,7 +227,8 @@ class RPC:
         :return: settings of integration dict
         """
         project_id = integration_data["project_id"]
-        secrets = secrets_tools.get_project_hidden_secrets(project_id)
+        vault_client = VaultClient.from_project(project_id)
+        secrets = vault_client.get_project_hidden_secrets(project_id)
         settings: dict = integration_data["settings"]
 
         for field, value in settings.items():
@@ -246,7 +247,7 @@ class RPC:
 
             settings[field] = secret_field.dict()
 
-        secrets_tools.set_project_hidden_secrets(integration_data["project_id"], secrets)
+        vault_client.set_project_hidden_secrets(secrets)
 
         return settings
 
