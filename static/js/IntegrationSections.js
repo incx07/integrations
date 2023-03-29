@@ -46,14 +46,14 @@ const IntegrationSections = {
             showNotify('INFO', 'Updated')
         },
         async fetch_integrations(integration_name) {
-            const resp = await fetch(`/api/v1/integrations/integrations/${this.$root.project_id}?name=${integration_name}`)
+            const resp = await fetch(`${this.$root.build_api_url('integrations', 'integrations')}/${this.$root.project_id}?name=${integration_name}`)
             if (resp.ok) {
                 return await resp.json()
             }
             showNotify('ERROR', 'Failed fetching updates')
         },
         async fetch_section(section_name) {
-            const resp = await fetch(`/api/v1/integrations/integrations/${this.$root.project_id}?section=${section_name}`)
+            const resp = await fetch(`${this.$root.build_api_url('integrations', 'integrations')}/${this.$root.project_id}?section=${section_name}`)
             if (resp.ok) {
                 return await resp.json()
             }
