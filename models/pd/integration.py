@@ -17,6 +17,7 @@ class IntegrationBase(BaseModel):
     description: Optional[str]
     task_id: Optional[str]
     status: Optional[str] = 'success'
+    mode: str
 
     class Config:
         orm_mode = True
