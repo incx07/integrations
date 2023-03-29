@@ -228,7 +228,7 @@ class RPC:
         """
         project_id = integration_data["project_id"]
         vault_client = VaultClient.from_project(project_id)
-        secrets = vault_client.get_project_hidden_secrets(project_id)
+        secrets = vault_client.get_project_hidden_secrets()
         settings: dict = integration_data["settings"]
 
         for field, value in settings.items():
