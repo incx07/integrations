@@ -35,32 +35,6 @@ class ProjectAPI(api_tools.APIModeHandler):
             db_integration.make_default()
         return IntegrationPD.from_orm(db_integration).dict(), 200
 
-    def put(self, integration_id: int):
-        db_integration = Integration.query.filter(Integration.id == integration_id).first()
-        integration = self.module.get_by_name(db_integration.name)
-        if not integration or not db_integration:
-            return {'error': 'integration not found'}, 404
-        try:
-            settings = integration.settings_model.parse_obj(request.json)
-        except ValidationError as e:
-            return e.errors(), 400
-
-        if request.json.get('is_default'):
-            db_integration.make_default()
-
-        db_integration.settings = settings.dict()
-        db_integration.description = request.json.get('description'),
-        db_integration.insert()
-        return IntegrationPD.from_orm(db_integration).dict(), 200
-
-    def delete(self, integration_id: int):
-        Integration.query.filter(Integration.id == integration_id).delete()
-        Integration.commit()
-        # if request.json.get('is_default'):
-        #     db_integration.make_default()
-        return integration_id, 204
-
-
 class AdminAPI(api_tools.APIModeHandler):
     def post(self, integration_name: str):
         # project_id = request.json.get('project_id')
@@ -88,7 +62,21 @@ class AdminAPI(api_tools.APIModeHandler):
             db_integration.make_default()
         return IntegrationPD.from_orm(db_integration).dict(), 200
 
-    def put(self, integration_id: int):
+
+class API(api_tools.APIBase):
+    url_params = [
+        '<string:integration_name>',
+        '<string:mode>/<string:integration_name>',
+        '<int:integration_id>',
+        '<string:mode>/<int:integration_id>',
+    ]
+
+    mode_handlers = {
+        'default': ProjectAPI,
+        'administration': AdminAPI,
+    }
+
+    def put(self, integration_id: int, **kwargs):
         db_integration = Integration.query.filter(Integration.id == integration_id).first()
         integration = self.module.get_by_name(db_integration.name)
         if not integration or not db_integration:
@@ -105,24 +93,10 @@ class AdminAPI(api_tools.APIModeHandler):
         db_integration.description = request.json.get('description'),
         db_integration.insert()
         return IntegrationPD.from_orm(db_integration).dict(), 200
-
-    def delete(self, integration_id: int):
+    
+    def delete(self, integration_id: int, **kwargs):
         Integration.query.filter(Integration.id == integration_id).delete()
         Integration.commit()
         # if request.json.get('is_default'):
         #     db_integration.make_default()
         return integration_id, 204
-
-
-class API(api_tools.APIBase):
-    url_params = [
-        '<string:integration_name>',
-        '<string:mode>/<string:integration_name>',
-        '<int:integration_id>',
-        '<string:mode>/<int:integration_id>',
-    ]
-
-    mode_handlers = {
-        'default': ProjectAPI,
-        'administration': AdminAPI,
-    }
