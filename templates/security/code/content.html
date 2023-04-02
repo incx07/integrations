@@ -12,7 +12,7 @@
                 </p>
             </div>
         </div>
-        <div class="row d-flex mt-2" id={{ "security_sast_%s_section" | format(section.name) }}>
+        <div class="row d-flex mt-2" id={{ "security_%s_section" | format(section.name) }}>
             {{ template_slot("security_%s_content" | format(section.name)) | safe }}
         </div>
     </div>

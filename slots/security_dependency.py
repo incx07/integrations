@@ -1,15 +1,15 @@
-from pylon.core.tools import web, log
+from pylon.core.tools import web
 
 
 class Slot:
 
-    @web.slot('integrations_security_sast_content')
+    @web.slot('integrations_security_dependency_content')
     def content(self, context, slot, payload):
         with context.app.app_context():
             allowed_sections = (
                 "processing", 
                 "reporters", 
-                "code_scanners"
+                "dependency_scanners"
             )
             sections = [
                 section for section in self.section_list() 
@@ -20,7 +20,7 @@ class Slot:
                 integrations_section_list=sections
             )
 
-    @web.slot('integrations_security_sast_scripts')
+    @web.slot('integrations_security_dependency_scripts')
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
@@ -28,7 +28,7 @@ class Slot:
                 integrations_section_list=self.section_list()
             )
 
-    @web.slot('integrations_security_sast_styles')
+    @web.slot('integrations_security_dependency_styles')
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
