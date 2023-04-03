@@ -29,10 +29,9 @@ class Slot:  # pylint: disable=E1101,R0903
     #             config=payload
     #         )
 
-    @web.slot('integrations_configuration_content')
+    @web.slot('administration_integrations_configuration_content')
     def content(self, context, slot, payload):
-        project_id = session_project.get()
-        existing_integrations = self.get_all_integrations(project_id)  # comes from RPC
+        existing_integrations = self.get_administration_integrations()  # comes from RPC
         all_sections = tuple(i.dict(exclude={'test_planner_description'}) for i in self.section_list())
         for i in all_sections:
             # i['integrations'] = existing_integrations.get(i['name'], [])
@@ -40,25 +39,28 @@ class Slot:  # pylint: disable=E1101,R0903
             # i['integrations_parsed'] = [pd.dict() for pd in i['integrations']]
 
         with context.app.app_context():
+            log.info(f'existing_integrations {existing_integrations}')
+            log.info(f'integrations_section_list {self.section_list()}')
+            log.info(f'all_sections {all_sections}')
             return self.descriptor.render_template(
-                'configuration/content.html',
+                'administration/content.html',
                 existing_integrations=existing_integrations,
                 integrations_section_list=self.section_list(),
                 all_sections=all_sections
             )
 
-    @web.slot('integrations_configuration_styles')
+    @web.slot('administration_integrations_configuration_styles')
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
-                'configuration/styles.html',
+                'administration/styles.html',
                 integrations_section_list=self.section_list()
             )
 
-    @web.slot('integrations_configuration_scripts')
+    @web.slot('administration_integrations_configuration_scripts')
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
-                'configuration/scripts.html',
+                'administration/scripts.html',
                 integrations_section_list=self.section_list()
             )

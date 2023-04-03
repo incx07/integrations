@@ -7,12 +7,13 @@ from pydantic import ValidationError, parse_obj_as
 class API(Resource):
     url_params = [
         '<string:integration_name>',
+        '<string:mode>/<string:integration_name>',
     ]
 
     def __init__(self, module):
         self.module = module
 
-    def post(self, integration_name: str):
+    def post(self, integration_name: str, **kwargs):
         integration = self.module.get_by_name(integration_name)
         if not integration:
             return {'error': 'integration not found'}, 404

@@ -1,4 +1,4 @@
-const IntegrationCard = {
+const InheritedIntegrationCard = {
     props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id', 'status'],
     delimiters: ['[[', ']]'],
     computed: {
@@ -7,6 +7,8 @@ const IntegrationCard = {
             !obj && console.warn('No reflected component found for', this.name)
             obj && !obj.handleEdit && console.warn('.handleEdit method not implemented for for', this.name)
             obj && !obj.handleDelete && console.warn('.handleDelete method not implemented for for', this.name)
+            obj && !obj.handleSetDefault && console.warn('.handleSetDefault method not implemented for for', this.name)
+            console.log('obj', obj)
             return obj
         },
         display_name() {
@@ -16,6 +18,7 @@ const IntegrationCard = {
             return this.reflected_component?.logo_src
         },
         circle_class() {
+            // console.log(`mode ${mode}`)
             switch (this.status) {
                 case window.integration_status.success:
                     return 'integration_icon_success'
@@ -27,8 +30,8 @@ const IntegrationCard = {
         }
     },
     methods: {
-        handle_edit() {
-            this.reflected_component.handleEdit(this.$props)
+        handle_set_default() {
+            this.reflected_component.handleSetDefault(this.id)
         },
         handle_delete() {
             this.reflected_component.handleDelete(this.id)
@@ -68,12 +71,8 @@ const IntegrationCard = {
                 </button>
     
                 <ul class="dropdown-menu">
-                    <li class="dropdown-item d-flex align-items-center" @click="handle_edit">
-                        <i class="icon__18x18 icon-edit icon__strict-color mr-2"></i>
-                        <span>Edit</span>
-                    </li>
-                    <li class="dropdown-item d-flex align-items-center" @click="handle_delete">
-                        <i class="icon__18x18 icon-delete icon__strict-color mr-2"></i>Delete
+                    <li class="dropdown-item d-flex align-items-center" @click="handle_set_default">
+                        <span>Set as default</span>
                     </li>
                 </ul>
             </div>
@@ -83,4 +82,4 @@ const IntegrationCard = {
 </div>
 `
 }
-register_component('IntegrationCard', IntegrationCard)
+register_component('InheritedIntegrationCard', InheritedIntegrationCard)

@@ -10,7 +10,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
     __table_args__ = (
         Index(
             'ix_project_default_uc',  # Index name
-            'project_id', 'name',  # Columns which are part of the index
+            'project_id', 'name', 'mode',  # Columns which are part of the index
             unique=True,
             postgresql_where=Column('is_default')  # The condition
         ),
@@ -18,7 +18,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
     id = Column(Integer, primary_key=True)
     name = Column(String(64), unique=False)
     project_id = Column(Integer, unique=False, nullable=True)
-    # mode = Column(String(64), unique=False, default='default')
+    mode = Column(String(64), unique=False, default='default')
     settings = Column(JSON, unique=False, default={})
     is_default = Column(Boolean, default=False, nullable=False)
     section = Column(String(64), unique=False, nullable=False)
@@ -30,11 +30,12 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
         Integration.query.filter(
             Integration.project_id == self.project_id,
             Integration.name == self.name,
+            Integration.mode == self.mode,
             Integration.is_default == True,
             Integration.id != self.id
         ).update({Integration.is_default: False})
         self.is_default = True
-        self.insert()
+        super().insert()
 
     def set_task_id(self, task_id: str):
         Integration.query.filter(
@@ -46,6 +47,7 @@ class Integration(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_t
         if not Integration.query.filter(
             Integration.project_id == self.project_id,
             Integration.name == self.name,
+            Integration.mode == self.mode,
             Integration.is_default == True,
         ).one_or_none():
             self.is_default = True

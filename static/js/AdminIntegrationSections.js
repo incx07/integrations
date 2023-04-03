@@ -1,4 +1,4 @@
-const IntegrationSections = {
+const AdminIntegrationSections = {
     delimiters: ['[[', ']]'],
     props: ['initial_sections'],
     data() {
@@ -68,17 +68,9 @@ const IntegrationSections = {
                     <p class="font-h6 font-weight-400 text-gray-700">[[ section.integration_description ]]</p>
                 </div>
                 <div>
-                    <p v-if="section.integrations.filter(i => i.mode !== 'default').length" class="font-h6 font-semibold text-gray-600 mt-4">INHERITED:</p>
-                    <div class="d-flex section_cards gap-4">
-                        <Inherited-Integration-Card
-                            v-for="integration in section.integrations.filter(i => i.mode !== 'default')"
-                            v-bind="integration"
-                        ></Inherited-Integration-Card>
-                    </div>
-                    <p v-if="section.integrations.filter(i => i.mode === 'default').length" class="font-h6 font-semibold text-gray-600 mt-4">LOCAL:</p>
                     <div class="d-flex section_cards gap-4">
                         <Integration-Card
-                            v-for="integration in section.integrations.filter(i => i.mode === 'default')"
+                            v-for="integration in section.integrations"
                             v-bind="integration"
                         ></Integration-Card>
                     </div>
@@ -90,4 +82,4 @@ const IntegrationSections = {
         </div>
     `
 }
-register_component('IntegrationSections', IntegrationSections)
+register_component('AdminIntegrationSections', AdminIntegrationSections)

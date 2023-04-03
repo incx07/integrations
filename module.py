@@ -52,6 +52,17 @@ class Module(module.ModuleModel):
             prefix="integrations_configuration_",
             weight=5,
         )
+        
+        theme.register_mode_subsection(
+            "administration", "configuration",
+            "integrations", "Integrations",
+            title="Integrations",
+            kind="slot",
+            permissions=["global_admin"],
+            prefix="administration_integrations_configuration_",
+            # icon_class="fas fa-server fa-fw",
+            # weight=2,
+        )
 
         self.descriptor.register_tool('integrations_tools', self)
 
