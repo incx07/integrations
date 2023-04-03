@@ -3,5 +3,4 @@
     {{ template_slot("integrations_%s_scripts" | format(section.name)) | safe }}
 {% endfor %}
 <script src="{{ url_for('integrations.static', filename='js/integration_card.js') }}"></script>
-<script src="{{ url_for('integrations.static', filename='js/inherited_integration_card.js') }}"></script>
-<script src="{{ url_for('integrations.static', filename='js/IntegrationSections.js') }}"></script>
+<script src="{{ url_for('integrations.static', filename='js/AdminIntegrationSections.js') }}"></script>

@@ -43,7 +43,7 @@ class Slot:  # pylint: disable=E1101,R0903
             log.info(f'integrations_section_list {self.section_list()}')
             log.info(f'all_sections {all_sections}')
             return self.descriptor.render_template(
-                'configuration/content.html',
+                'administration/content.html',
                 existing_integrations=existing_integrations,
                 integrations_section_list=self.section_list(),
                 all_sections=all_sections
@@ -53,7 +53,7 @@ class Slot:  # pylint: disable=E1101,R0903
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
-                'configuration/styles.html',
+                'administration/styles.html',
                 integrations_section_list=self.section_list()
             )
 
@@ -61,6 +61,6 @@ class Slot:  # pylint: disable=E1101,R0903
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
-                'configuration/scripts.html',
+                'administration/scripts.html',
                 integrations_section_list=self.section_list()
             )
