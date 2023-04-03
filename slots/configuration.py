@@ -1,7 +1,8 @@
 from pylon.core.tools import web, log
 # from flask import g
-
+from flask import make_response, after_this_request
 from tools import session_project
+from datetime import datetime
 
 
 class Slot:  # pylint: disable=E1101,R0903
@@ -31,6 +32,15 @@ class Slot:  # pylint: disable=E1101,R0903
 
     @web.slot('integrations_configuration_content')
     def content(self, context, slot, payload):
+        @after_this_request
+        def add_header(response):
+            response.headers['Cache-Control'] = 'max-age=0, must-revalidate'
+            response.headers['Last-Modified'] = datetime.now()
+            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '-1'
+            return response
+
         project_id = session_project.get()
         existing_integrations = self.get_project_integrations(project_id)  # comes from RPC
         all_sections = tuple(i.dict(exclude={'test_planner_description'}) for i in self.section_list())
