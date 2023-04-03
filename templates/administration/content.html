@@ -5,7 +5,7 @@
         <p class="font-h4 font-bold">Integrations</p>
     </div>
     <!-- {{ template_slot('backend_performance_runners_content') | safe }} -->
-    <Integration-Sections
+    <Admin-Integration-Sections
         @register="register"
         instance_name="integration_sections"
         :initial_sections='{{ all_sections | tojson }}'
@@ -15,5 +15,5 @@
                 {{ template_slot("integrations_%s_content" | format(section['name'])) | safe }}
             </template>
         {% endfor %}
-    </Integration-Sections>
+    </Admin-Integration-Sections>
 </div>

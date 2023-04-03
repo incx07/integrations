@@ -1,4 +1,5 @@
 from flask import request
+from pylon.core.tools import log
 
 from tools import api_tools
 
@@ -7,14 +8,14 @@ class ProjectAPI(api_tools.APIModeHandler):
     def get(self, project_id: int):
         if request.args.get('name'):
             return [
-                i.dict() for i in self.module.get_project_integrations_by_name(project_id, request.args['name'])
+                i.dict() for i in self.module.get_all_integrations_by_name(project_id, request.args['name'])
             ], 200
         if request.args.get('section'):
             return [
-                i.dict() for i in self.module.get_project_integrations_by_section(project_id, request.args['section'])
+                i.dict() for i in self.module.get_all_integrations_by_section(project_id, request.args['section'])
             ], 200
         return [
-            i.dict() for i in self.module.get_project_integrations(project_id, False)
+            i.dict() for i in self.module.get_all_integrations(project_id, False)
         ], 200
         
           

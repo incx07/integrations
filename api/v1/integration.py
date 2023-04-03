@@ -94,6 +94,14 @@ class API(api_tools.APIBase):
         db_integration.insert()
         return IntegrationPD.from_orm(db_integration).dict(), 200
     
+    def patch(self, integration_id: int, **kwargs):
+        db_integration = Integration.query.filter(Integration.id == integration_id).first()
+        integration = self.module.get_by_name(db_integration.name)
+        if not integration or not db_integration:
+            return {'error': 'integration not found'}, 404
+        db_integration.make_default()
+        return {'msg': 'integration was set as default'}, 200
+    
     def delete(self, integration_id: int, **kwargs):
         Integration.query.filter(Integration.id == integration_id).delete()
         Integration.commit()
