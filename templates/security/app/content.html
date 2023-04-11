@@ -1,0 +1,17 @@
+{% for section in integrations_section_list | default([]) %}
+    <div class="section integration_section">
+        <div class="row">
+            <div class="col">
+                <p class="font-h5 font-bold font-uppercase integration_section_name">
+                    {{- section.name | capitalize -}}
+                </p>
+                <p class="font-h6 font-weight-400">
+                        {{- section.test_planner_description | safe -}}
+                </p>
+            </div>
+        </div>
+        <div class="d-grid grid-column-2 gap-50 mt-4 grid-items-start" id={{ "security_%s_section" | format(section.name) }}>
+            {{ template_slot("security_%s_content" | format(section.name)) | safe }}
+        </div>
+    </div>
+{% endfor %}

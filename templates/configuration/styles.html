@@ -1,0 +1,4 @@
+<link rel="stylesheet" href="{{ url_for('integrations.static', filename='css/integrations.css') }}" />
+{% for section in integrations_section_list %}
+    {{ template_slot("integrations_%s_styles" | format(section.name)) | safe }}
+{% endfor %}

@@ -1,0 +1,4 @@
+<script src="{{ url_for('integrations.static', filename='js/backend_performance_create.js') }}"></script>
+{% if reporters %}
+    {{ template_slot("backend_performance_%s_scripts" | format(reporters.name)) | safe }}
+{% endif %}

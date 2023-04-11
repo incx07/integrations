@@ -38,17 +38,9 @@ $(() => {
         set: values => {
             if (values) {
                 console.debug('SET integrations', values)
-                // {
-                //     scanners: {
-                //         qualys:
-                //         {
-                //             id: "44"
-                //         }
-                //     }
-                // }
                 Object.keys(values).forEach(section => {
                     Object.keys(values[section]).forEach(integrationItem => {
-                        const dataCallbackName = `${section}_${integrationItem}`
+                        const dataCallbackName = `${section}_${integrationItem}`         
                         if (window[dataCallbackName]) {
                             window[dataCallbackName].set_data(values[section][integrationItem])
                         } else {
@@ -191,10 +183,11 @@ const TestIntegrationItem = {
         }
     },
     template: `
-    <div class="card card-row-1 card-x mx-auto">
+<div class="col-6">
+    <div class="card card-row-1">
         <div class="card-header">
             <div class="d-flex align-items-center">
-                <p class="flex-grow-1 font-h5 font-semibold" style="line-height: 24px">[[ display_name ]]</p>
+                <h9 class="flex-grow-1" style="line-height: 24px">[[ display_name ]]</h9>
                 <button aria-expanded="false" 
                         type="button"
                         class="btn btn-24 btn-action"
@@ -202,6 +195,7 @@ const TestIntegrationItem = {
                         :data-target="is_selected && '#' + settings_id" 
                         v-if="!!this.$slots.settings"
                         :class="!is_selected && 'disabled'"
+                        
                         >
                     <i class="fas fa-cog"></i>
                 </button>
@@ -215,13 +209,13 @@ const TestIntegrationItem = {
                            v-model="is_selected"
                            :disabled="project_integrations.length === 0 && !errors.id"
                            />
+<!--                    <span class="custom-toggle-slider rounded-circle"></span>-->
                     <span class="custom-toggle_slider round"></span>
                 </label>
             </div>
         </div>
-        <div>
-            <div class="collapse pb-20" :id="selector_id">
-                <p class="font-h6 font-semibold mb-1">Integrated account</p>
+        <div class="row">
+            <div class="collapse col-12 mb-3 pl-0" :id="selector_id">
                 <div class="select-validation" 
                     :class="{'invalid-select': this.errors.id}">
                     <select class="selectpicker bootstrap-select__b" data-style="btn"
@@ -260,6 +254,7 @@ const TestIntegrationItem = {
             </div>
         </div>
     </div>
+</div>
     `,
 }
 

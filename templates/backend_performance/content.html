@@ -1,0 +1,37 @@
+{% set instance_name_prefix = instance_name_prefix | default('') %}
+
+<div class="section integration_section">
+    <div class="row">
+        <div class="col">
+            <p class="font-h5 font-bold font-uppercase integration_section_name">
+                {{- processing.name | capitalize -}}
+            </p>
+            <p class="font-h6 font-weight-400">{{- processing.test_planner_description | safe -}}</p>
+        </div>
+    </div>
+    <div class="d-grid grid-column-2 gap-50 grid-items-start mt-4" id="backend_performance_processing_section">
+        {{ template_slot("backend_performance_processing_content", payload={
+                        'instance_name_prefix': instance_name_prefix
+                        }) | safe }}
+    </div>
+</div> 
+
+{% if reporters %}
+    <div class="section integration_section">
+        <div class="row">
+            <div class="col">
+                <p class="font-h5 font-bold font-uppercase integration_section_name">
+                    {{- reporters.name | capitalize -}}
+                </p>
+                <p class="font-h6 font-weight-400">
+                        {{- reporters.test_planner_description | safe -}}
+                </p>
+            </div>
+        </div>
+        <div class="d-grid grid-column-2 gap-50 grid-items-start mt-4" id="backend_performance_reporters_section">
+            {{ template_slot("backend_performance_reporters_content", payload={
+                            'instance_name_prefix': instance_name_prefix
+                            }) | safe }}
+        </div>
+    </div>
+{% endif %}

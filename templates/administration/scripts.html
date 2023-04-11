@@ -1,0 +1,6 @@
+<script src="{{ url_for('integrations.static', filename='js/configuration.js') }}"></script>
+{% for section in integrations_section_list %}
+    {{ template_slot("integrations_%s_scripts" | format(section.name)) | safe }}
+{% endfor %}
+<script src="{{ url_for('integrations.static', filename='js/integration_card.js') }}"></script>
+<script src="{{ url_for('integrations.static', filename='js/AdminIntegrationSections.js') }}"></script>

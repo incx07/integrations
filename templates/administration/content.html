@@ -1,0 +1,19 @@
+{% set integrations_section_list = integrations_section_list | default([]) %}
+{% set existing_integrations = existing_integrations | default({}) %}
+<div class="card card-12 pb-8 mb-3">
+    <div class="border-b px-8 py-6">
+        <p class="font-h4 font-bold">Integrations</p>
+    </div>
+    <!-- {{ template_slot('backend_performance_runners_content') | safe }} -->
+    <Admin-Integration-Sections
+        @register="register"
+        instance_name="integration_sections"
+        :initial_sections='{{ all_sections | tojson }}'
+    >
+        {% for section in all_sections if section['name'] | lower != 'processing' %}
+            <template #section_create_{{ section['name'] }}>
+                {{ template_slot("integrations_%s_content" | format(section['name'])) | safe }}
+            </template>
+        {% endfor %}
+    </Admin-Integration-Sections>
+</div>
