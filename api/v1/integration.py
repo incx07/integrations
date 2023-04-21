@@ -35,6 +35,7 @@ class ProjectAPI(api_tools.APIModeHandler):
             db_integration.make_default()
         return IntegrationPD.from_orm(db_integration).dict(), 200
 
+
 class AdminAPI(api_tools.APIModeHandler):
     def post(self, integration_name: str):
         # project_id = request.json.get('project_id')

@@ -2,6 +2,7 @@ from flask_restful import Resource
 
 from flask import request, jsonify
 from pydantic import ValidationError, parse_obj_as
+from pylon.core.tools import log
 
 
 class API(Resource):
