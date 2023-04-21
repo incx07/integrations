@@ -49,6 +49,13 @@ class Module(module.ModuleModel):
             'Integrations',
             title="Integrations",
             kind="slot",
+            permissions={
+                "permissions": ["configuration.integrations"],
+                "recommended_roles": {
+                    "administration": {"admin": True, "viewer": True, "editor": True},
+                    "default": {"admin": True, "viewer": True, "editor": True},
+                    "developer": {"admin": True, "viewer": True, "editor": True},
+                }},
             prefix="integrations_configuration_",
             weight=5,
         )
@@ -58,7 +65,13 @@ class Module(module.ModuleModel):
             "integrations", "Integrations",
             title="Integrations",
             kind="slot",
-            permissions=["global_admin"],
+            permissions={
+                "permissions": ["configuration.integrations"],
+                "recommended_roles": {
+                    "administration": {"admin": True, "viewer": True, "editor": True},
+                    "default": {"admin": True, "viewer": True, "editor": True},
+                    "developer": {"admin": True, "viewer": True, "editor": True},
+                }},
             prefix="administration_integrations_configuration_",
             # icon_class="fas fa-server fa-fw",
             # weight=2,
