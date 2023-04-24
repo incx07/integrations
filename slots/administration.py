@@ -1,7 +1,7 @@
 from pylon.core.tools import web, log
 # from flask import g
 
-from tools import session_project
+from tools import auth, theme
 
 
 class Slot:  # pylint: disable=E1101,R0903
@@ -30,6 +30,7 @@ class Slot:  # pylint: disable=E1101,R0903
     #         )
 
     @web.slot('administration_integrations_configuration_content')
+    @auth.decorators.check_slot(["configuration.integrations"], access_denied_reply=theme.access_denied_part)
     def content(self, context, slot, payload):
         existing_integrations = self.get_administration_integrations()  # comes from RPC
         all_sections = tuple(i.dict(exclude={'test_planner_description'}) for i in self.section_list())
@@ -50,6 +51,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('administration_integrations_configuration_styles')
+    @auth.decorators.check_slot(["configuration.integrations"])
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
@@ -58,6 +60,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('administration_integrations_configuration_scripts')
+    @auth.decorators.check_slot(["configuration.integrations"])
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
