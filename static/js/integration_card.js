@@ -33,6 +33,9 @@ const IntegrationCard = {
         handle_delete() {
             this.reflected_component.handleDelete(this.id)
         },
+        handle_set_default() {
+            this.reflected_component.handleSetDefault(this.id)
+        },
     },
     watch: {
         status() {
@@ -74,6 +77,9 @@ const IntegrationCard = {
                     </li>
                     <li class="dropdown-item d-flex align-items-center" @click="handle_delete">
                         <i class="icon__18x18 icon-delete icon__strict-color mr-2"></i>Delete
+                    </li>
+                    <li class="dropdown-item d-flex align-items-center" @click="handle_set_default">
+                        <span>Set as default</span>
                     </li>
                 </ul>
             </div>

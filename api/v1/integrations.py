@@ -1,10 +1,17 @@
 from flask import request
 from pylon.core.tools import log
 
-from tools import api_tools
+from tools import api_tools, auth
 
 
 class ProjectAPI(api_tools.APIModeHandler):
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.view"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": False, "editor": False},
+        }})
     def get(self, project_id: int):
         if request.args.get('name'):
             return [
@@ -20,6 +27,13 @@ class ProjectAPI(api_tools.APIModeHandler):
         
           
 class AdminAPI(api_tools.APIModeHandler):
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.view"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": True, "editor": True},
+            "default": {"admin": True, "viewer": True, "editor": True},
+            "developer": {"admin": True, "viewer": False, "editor": False},
+        }})
     def get(self, **kwargs):
         if request.args.get('name'):
             return [

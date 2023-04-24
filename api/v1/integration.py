@@ -3,12 +3,19 @@ from pylon.core.tools import log
 from flask import request
 from pydantic import ValidationError, parse_obj_as
 
-from tools import api_tools
+from tools import api_tools, auth
 from ...models.integration import Integration
 from ...models.pd.integration import IntegrationPD
 
 
 class ProjectAPI(api_tools.APIModeHandler):
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.create"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": False, "editor": True},
+            "default": {"admin": True, "viewer": False, "editor": True},
+            "developer": {"admin": False, "viewer": False, "editor": False},
+        }})
     def post(self, integration_name: str):
         project_id = request.json.get('project_id')
         if not project_id:
@@ -37,6 +44,13 @@ class ProjectAPI(api_tools.APIModeHandler):
 
 
 class AdminAPI(api_tools.APIModeHandler):
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.create"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": False, "editor": True},
+            "default": {"admin": True, "viewer": False, "editor": True},
+            "developer": {"admin": False, "viewer": False, "editor": False},
+        }})
     def post(self, integration_name: str):
         # project_id = request.json.get('project_id')
         # if not project_id:
@@ -76,7 +90,14 @@ class API(api_tools.APIBase):
         'default': ProjectAPI,
         'administration': AdminAPI,
     }
-
+    
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.edit"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": False, "editor": True},
+            "default": {"admin": True, "viewer": False, "editor": True},
+            "developer": {"admin": False, "viewer": False, "editor": False},
+        }})
     def put(self, integration_id: int, **kwargs):
         db_integration = Integration.query.filter(Integration.id == integration_id).first()
         integration = self.module.get_by_name(db_integration.name)
@@ -94,7 +115,14 @@ class API(api_tools.APIBase):
         db_integration.description = request.json.get('description'),
         db_integration.insert()
         return IntegrationPD.from_orm(db_integration).dict(), 200
-    
+
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.edit"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": False, "editor": True},
+            "default": {"admin": True, "viewer": False, "editor": True},
+            "developer": {"admin": False, "viewer": False, "editor": False},
+        }})
     def patch(self, integration_id: int, **kwargs):
         db_integration = Integration.query.filter(Integration.id == integration_id).first()
         integration = self.module.get_by_name(db_integration.name)
@@ -102,7 +130,14 @@ class API(api_tools.APIBase):
             return {'error': 'integration not found'}, 404
         db_integration.make_default()
         return {'msg': 'integration was set as default'}, 200
-    
+
+    @auth.decorators.check_api({
+        "permissions": ["configuration.integrations.integrations.delete"],
+        "recommended_roles": {
+            "administration": {"admin": True, "viewer": False, "editor": False},
+            "default": {"admin": True, "viewer": False, "editor": False},
+            "developer": {"admin": False, "viewer": False, "editor": False},
+        }})    
     def delete(self, integration_id: int, **kwargs):
         Integration.query.filter(Integration.id == integration_id).delete()
         Integration.commit()

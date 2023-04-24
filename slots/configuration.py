@@ -1,7 +1,7 @@
 from pylon.core.tools import web, log
 # from flask import g
 from flask import make_response, after_this_request
-from tools import session_project
+from tools import session_project, auth, theme
 from datetime import datetime
 
 
@@ -31,6 +31,7 @@ class Slot:  # pylint: disable=E1101,R0903
     #         )
 
     @web.slot('integrations_configuration_content')
+    @auth.decorators.check_slot(["configuration.integrations"], access_denied_reply=theme.access_denied_part)
     def content(self, context, slot, payload):
         @after_this_request
         def add_header(response):
@@ -58,6 +59,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('integrations_configuration_styles')
+    @auth.decorators.check_slot(["configuration.integrations"])
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
@@ -66,6 +68,7 @@ class Slot:  # pylint: disable=E1101,R0903
             )
 
     @web.slot('integrations_configuration_scripts')
+    @auth.decorators.check_slot(["configuration.integrations"])
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(

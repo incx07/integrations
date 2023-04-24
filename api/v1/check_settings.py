@@ -4,6 +4,7 @@ from flask import request, jsonify
 from pydantic import ValidationError, parse_obj_as
 from pylon.core.tools import log
 
+from tools import auth
 
 class API(Resource):
     url_params = [
@@ -14,6 +15,9 @@ class API(Resource):
     def __init__(self, module):
         self.module = module
 
+    @auth.decorators.check_api(["configuration.integrations.integrations.create",
+                                "configuration.integrations.integrations.edit"
+                                ])
     def post(self, integration_name: str, **kwargs):
         integration = self.module.get_by_name(integration_name)
         if not integration:

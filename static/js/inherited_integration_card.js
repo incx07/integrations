@@ -33,9 +33,6 @@ const InheritedIntegrationCard = {
         handle_set_default() {
             this.reflected_component.handleSetDefault(this.id)
         },
-        handle_delete() {
-            this.reflected_component.handleDelete(this.id)
-        },
     },
     watch: {
         status() {
