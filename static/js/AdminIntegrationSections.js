@@ -31,6 +31,11 @@ const AdminIntegrationSections = {
                 }
             }
         })
+
+        $(() => {
+            location.hash !== '' && $(location.hash).modal('show')
+            location.hash = ''
+        })
     },
     methods: {
         async handle_integration_update({section_name, ...rest}) {

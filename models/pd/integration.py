@@ -54,9 +54,12 @@ class SecretField(BaseModel):
     from_secrets: bool = True
     value: str
 
-    def unsecret(self, project_id: int):
+    def unsecret(self, project_id: Optional[int] = None):
         if self.from_secrets:
-            client = VaultClient.from_project(project_id)
+            if project_id:
+                client = VaultClient.from_project(project_id)
+            else:
+                client = VaultClient()
             return client.unsecret(self.value)
         else:
             return self.value
