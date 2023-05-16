@@ -1,19 +1,27 @@
-from flask_restful import Resource
+from flask import request
+from pydantic import ValidationError
 
-from flask import request, jsonify
-from pydantic import ValidationError, parse_obj_as
-from pylon.core.tools import log
+from tools import auth, api_tools
 
-from tools import auth
 
-class API(Resource):
+class ProjectAPI(api_tools.APIModeHandler):
+    ...
+
+
+class AdminAPI(api_tools.APIModeHandler):
+    ...
+
+
+class API(api_tools.APIBase):
     url_params = [
         '<string:integration_name>',
         '<string:mode>/<string:integration_name>',
     ]
 
-    def __init__(self, module):
-        self.module = module
+    mode_handlers = {
+        'default': ProjectAPI,
+        'administration': AdminAPI,
+    }
 
     @auth.decorators.check_api(["configuration.integrations.integrations.create",
                                 "configuration.integrations.integrations.edit"
