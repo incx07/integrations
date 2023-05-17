@@ -36,7 +36,9 @@ class RPC:
         return self.integrations
 
     @rpc('get_project_integrations')
-    def get_project_integrations(self, project_id: int, group_by_section: bool = True, mode: str = c.DEFAULT_MODE) -> dict:
+    def get_project_integrations(self, project_id: int, group_by_section: bool = True,
+            mode: str = c.DEFAULT_MODE
+    ) -> dict:
         results = Integration.query.filter(
             Integration.project_id == project_id,
             Integration.name.in_(self.integrations.keys()),
@@ -63,8 +65,10 @@ class RPC:
         return reduce(reducer, results, defaultdict(list))
 
     @rpc('get_project_integrations_by_name')
-    def get_project_integrations_by_name(self, project_id: Optional[int], integration_name: str,
-                                         mode: str = c.DEFAULT_MODE) -> List[IntegrationPD]:
+    def get_project_integrations_by_name(self, project_id: Optional[int],
+            integration_name: str,
+            mode: str = c.DEFAULT_MODE
+    ) -> List[IntegrationPD]:
         if integration_name not in self.integrations.keys():
             return []
         results = Integration.query.filter(
@@ -82,7 +86,8 @@ class RPC:
 
     @rpc('get_project_integrations_by_section')
     def get_project_integrations_by_section(self, project_id: Optional[int], section_name: str,
-                                            mode: str = c.DEFAULT_MODE) -> List[IntegrationPD]:
+            mode: str = c.DEFAULT_MODE
+    ) -> List[IntegrationPD]:
         if section_name not in self.sections.keys():
             return []
         results = Integration.query.filter(
@@ -100,7 +105,7 @@ class RPC:
     @rpc('register_section')
     @rpc_tools.wrap_exceptions(ValidationError)
     def register_section(self, *, force_overwrite: bool = False, **kwargs
-                         ) -> SectionRegistrationForm:
+    ) -> SectionRegistrationForm:
         form_data = SectionRegistrationForm(**kwargs)
         if form_data.name not in self.sections or force_overwrite:
             self.sections[form_data.name] = form_data
@@ -267,9 +272,13 @@ class RPC:
         Gets project integrations in cloud section
         """
         integrations = self.get_project_integrations(project_id)
+        admin_integrations = self.get_administration_integrations(group_by_section=True)
+        integrations["clouds"].extend(admin_integrations["clouds"])
+
         cloud_regions = [
             {
                 "name": f"{region.name.split('_')[0]} {region.description}"
+                        f"{' - inherited' if region.mode == 'administration' else ''}"
                         f"{' - default' if region.is_default else ''}",
                 "cloud_settings": {
                     "integration_name": region.name,
@@ -306,7 +315,8 @@ class RPC:
         return reduce(reducer, results, defaultdict(list))
 
     @rpc('get_administration_integrations_by_name')
-    def get_administration_integrations_by_name(self, integration_name: str) -> List[IntegrationPD]:
+    def get_administration_integrations_by_name(self, integration_name: str) -> List[
+        IntegrationPD]:
         if integration_name not in self.integrations.keys():
             return []
         results = Integration.query.filter(
@@ -322,7 +332,8 @@ class RPC:
         return results
 
     @rpc('get_administration_integrations_by_section')
-    def get_administration_integrations_by_section(self, section_name: str) -> List[IntegrationPD]:
+    def get_administration_integrations_by_section(self, section_name: str) -> List[
+        IntegrationPD]:
         if section_name not in self.sections.keys():
             return []
         results = Integration.query.filter(
@@ -376,17 +387,20 @@ class RPC:
         return reduce(reducer, results, defaultdict(list))
 
     @rpc('get_all_integrations_by_name')
-    def get_all_integrations_by_name(self, project_id: int, integration_name: str) -> List[IntegrationPD]:
+    def get_all_integrations_by_name(self, project_id: int, integration_name: str) -> List[
+        IntegrationPD]:
         return self.get_project_integrations_by_name(project_id, integration_name) + \
             self.get_administration_integrations_by_name(integration_name)
 
     @rpc('get_all_integrations_by_section')
-    def get_all_integrations_by_section(self, project_id: int, section_name: str) -> List[IntegrationPD]:
+    def get_all_integrations_by_section(self, project_id: int, section_name: str) -> List[
+        IntegrationPD]:
         return self.get_project_integrations_by_section(project_id, section_name) + \
             self.get_administration_integrations_by_section(section_name)
 
     @rpc('update_attrs')
-    def update_attrs(self, integration_id: int, update_dict: dict, return_result: bool = False) -> Optional[dict]:
+    def update_attrs(self, integration_id: int, update_dict: dict, return_result: bool = False
+    ) -> Optional[dict]:
         log.info('update_attrs called %s', [integration_id, update_dict])
         update_dict.pop('id', None)
         Integration.query.filter(
