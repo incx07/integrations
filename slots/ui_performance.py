@@ -1,9 +1,11 @@
 from pylon.core.tools import web, log
+from tools import auth, theme
 
 
 class Slot:
 
     @web.slot('integrations_ui_performance_content')
+    # @auth.decorators.check_slot(["configuration.integrations"])
     def content(self, context, slot, payload):
         if payload is None:
             payload = {}
@@ -16,6 +18,7 @@ class Slot:
             )
 
     @web.slot('integrations_ui_performance_scripts')
+    # @auth.decorators.check_slot(["configuration.integrations"])
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
@@ -25,6 +28,7 @@ class Slot:
             )
 
     @web.slot('integrations_ui_performance_styles')
+    # @auth.decorators.check_slot(["configuration.integrations"])
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(

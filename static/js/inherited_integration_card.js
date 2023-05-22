@@ -8,7 +8,6 @@ const InheritedIntegrationCard = {
             obj && !obj.handleEdit && console.warn('.handleEdit method not implemented for for', this.name)
             obj && !obj.handleDelete && console.warn('.handleDelete method not implemented for for', this.name)
             obj && !obj.handleSetDefault && console.warn('.handleSetDefault method not implemented for for', this.name)
-            console.log('obj', obj)
             return obj
         },
         display_name() {
@@ -18,7 +17,6 @@ const InheritedIntegrationCard = {
             return this.reflected_component?.logo_src
         },
         circle_class() {
-            // console.log(`mode ${mode}`)
             switch (this.status) {
                 case window.integration_status.success:
                     return 'integration_icon_success'
@@ -31,7 +29,7 @@ const InheritedIntegrationCard = {
     },
     methods: {
         handle_set_default() {
-            this.reflected_component.handleSetDefault(this.id)
+            this.reflected_component.handleSetDefault(this.id, local=false)
         },
     },
     watch: {

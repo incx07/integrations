@@ -83,8 +83,8 @@ const TestConnectionButton = {
 
 const ModalDialog = {
     delimiters: ['[[', ']]'],
-    props: ['display_name', 'id', 'description', 'is_default', 'is_fetching'],
-    emits: ['update', 'create', 'update:description', 'update:is_default'],
+    props: ['display_name', 'id', 'name', 'is_default', 'is_fetching'],
+    emits: ['update', 'create', 'update:name', 'update:is_default'],
     template: `
 <div class="modal-dialog modal-dialog-aside" role="document">
     <div class="modal-content">
@@ -108,19 +108,20 @@ const ModalDialog = {
         </div>
 
         <div class="modal-body">
-            <slot name="body"></slot>
             <div class="form-group">
                 <div>
                     <label class="w-100">
-                        <p class="font-h5 font-semibold">Description<span class="text-gray-600 font-h6 font-weight-400 ml-1">(optional)</span></p>
-                        <p class="font-h6 font-weight-400 mb-2">You may specify the name of integration to differ from similar ones</p>
-                        <textarea class="form-control" rows="1"
-                            :value="description"
-                            @input="$emit('update:description', $event.target.value)">
-                        </textarea>
-    
+                        <p class="font-h5 font-semibold">Name</p>
+                        <p class="font-h6 font-weight-400 mb-2">Specify the name of integration to differ from similar ones</p>
+                        <input type="text" class="form-control"
+                            :value="name"
+                            @input="$emit('update:name', $event.target.value)"
+                        >
                     </label>
                 </div>
+            </div>
+            <slot name="body"></slot>
+            <div class="form-group">
                 <div class="mt-3">
                     <label class="custom-checkbox d-flex align-items-center">
                         <input class="mr-2.5" type="checkbox"

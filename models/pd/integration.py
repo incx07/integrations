@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, constr
 from pylon.core.tools import log
 
 from .registration import SectionRegistrationForm
@@ -10,14 +10,15 @@ from tools import rpc_tools, VaultClient, session_project
 
 class IntegrationBase(BaseModel):
     id: int
+    project_id: Optional[int]
     name: str
     section: Union[str, SectionRegistrationForm]
     settings: dict
     is_default: bool
-    description: Optional[str]
+    config: dict
     task_id: Optional[str]
     status: Optional[str] = 'success'
-    mode: str
+    # mode: str
 
     class Config:
         orm_mode = True
@@ -43,11 +44,18 @@ class IntegrationPD(IntegrationBase):
             return rpc_tools.RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
-    @validator("description")
-    def validate_description(cls, value, values):
-        if not value:
-            return f'Integration #{values["id"]}'
-        return value
+    # @validator("config")
+    # def validate_config(cls, value, values):
+    #     assert value.get('name'), 'ensure this value has at least 1 characters'
+    #     return value
+
+
+class IntegrationProjectPD(IntegrationPD):
+    @validator("is_default")
+    def validate_is_default(cls, value, values):
+        if rpc_tools.RpcMixin().rpc.call.integrations_is_default(values['project_id'], values):
+            return True
+        return False
 
 
 class SecretField(BaseModel):
