@@ -72,7 +72,7 @@ class ProjectAPI(api_tools.APIModeHandler):
                 # db_integration.make_default(tenant_session)
 
             db_integration.settings = settings.dict()
-            db_integration.config = request.json.get('config'),
+            db_integration.config = request.json.get('config')
             db_integration.insert(tenant_session)
             return IntegrationProjectPD.from_orm(db_integration).dict(), 200
 
@@ -172,7 +172,7 @@ class AdminAPI(api_tools.APIModeHandler):
             db_integration.make_default()
 
         db_integration.settings = settings.dict()
-        db_integration.config = request.json.get('config'),
+        db_integration.config = request.json.get('config')
         db_integration.insert()
         return IntegrationPD.from_orm(db_integration).dict(), 200
 

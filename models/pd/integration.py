@@ -49,6 +49,13 @@ class IntegrationPD(IntegrationBase):
     #     assert value.get('name'), 'ensure this value has at least 1 characters'
     #     return value
 
+    @validator("config")
+    def validate_description(cls, value, values):
+        if not value.get('name'):
+            value['name'] = f'Integration #{values["id"]}'
+            return value
+        return value
+
 
 class IntegrationProjectPD(IntegrationPD):
     @validator("is_default")

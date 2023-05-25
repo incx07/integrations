@@ -3,6 +3,8 @@ from sqlalchemy import Integer, Column, String, Boolean, UniqueConstraint, Index
 from sqlalchemy.dialects.postgresql import JSON
 
 from tools import db_tools, db, rpc_tools
+from ..models.pd.integration import IntegrationBase
+
 
 
 class IntegrationAdmin(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, rpc_tools.EventManagerMixin):
@@ -54,7 +56,7 @@ class IntegrationAdmin(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin, 
 
     def process_secret_fields(self):
         settings: dict = self.rpc.call.integrations_process_secrets(
-            integration_data=self.to_json(),
+            integration_data=IntegrationBase.from_orm(self).dict(),
         )
         IntegrationAdmin.query.filter(
             IntegrationAdmin.id == self.id
@@ -125,7 +127,7 @@ class IntegrationProject(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin
 
     def process_secret_fields(self, session):
         settings: dict = self.rpc.call.integrations_process_secrets(
-            integration_data=self.to_json(),
+            integration_data=IntegrationBase.from_orm(self).dict(),
         )
         session.query(IntegrationProject).filter(
             IntegrationProject.id == self.id

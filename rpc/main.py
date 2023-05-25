@@ -253,8 +253,8 @@ class RPC:
                 continue
             if secret_field.from_secrets:
                 continue
-
-            secret_path = f"{field}_{integration_data['id']}"
+            mode = c.DEFAULT_MODE if integration_data['project_id'] else c.ADMINISTRATION_MODE
+            secret_path = f"{field}_{mode}_{integration_data['id']}"
             secrets[secret_path] = secret_field.value
 
             secret_field.value = "{{" + f"secret.{secret_path}" + "}}"
@@ -465,35 +465,47 @@ class RPC:
             ).one_or_none()
 
     @rpc('get_s3_settings')
-    def get_s3_settings(self, project_id, integration_id=None):
+    def get_s3_settings(self, project_id, integration_id=None, is_local=True):
 
         def _usecret_field(integration_db):
             settings = integration_db.settings
             secret_access_key = SecretField.parse_obj(settings['secret_access_key'])
             settings['secret_access_key'] = secret_access_key.unsecret(project_id=project_id)
             return settings
+        
         try:
-            if integration_id:
+            if integration_id and is_local:
                 with db.with_project_schema_session(project_id) as tenant_session:
                     integration_db = tenant_session.query(IntegrationProject).filter(
-                        IntegrationProject.id == integration_id
+                        IntegrationProject.id == integration_id,
+                        IntegrationProject.name == 's3_integration'
                     ).one_or_none()
                     if integration_db:
                         return _usecret_field(integration_db)
-            else:
+            elif integration_id:
+                integration_db = IntegrationAdmin.query.filter(
+                    IntegrationAdmin.id == integration_id, 
+                    IntegrationAdmin.name == 's3_integration'
+                ).one_or_none()
+                if integration_db:
+                    return _usecret_field(integration_db)
+            # in case if integration_id is not provided - try to find default integration:
+            else: 
                 with db.with_project_schema_session(project_id) as tenant_session:
                     default_integration = tenant_session.query(IntegrationDefault).filter(
                         IntegrationDefault.name == 's3_integration'
                     ).one_or_none()
                     if default_integration and default_integration.project_id:
                         integration_db = tenant_session.query(IntegrationProject).filter(
-                            IntegrationProject.id == default_integration.integration_id
+                            IntegrationProject.id == default_integration.integration_id,
+                            IntegrationProject.name == 's3_integration'
                         ).one_or_none()
                         if integration_db:
                             return _usecret_field(integration_db)
                     elif default_integration:
                         integration_db = IntegrationAdmin.query.filter(
-                            IntegrationAdmin.id == default_integration.integration_id
+                            IntegrationAdmin.id == default_integration.integration_id,
+                            IntegrationAdmin.name == 's3_integration'
                         ).one_or_none()
                         if integration_db:
                             return _usecret_field(integration_db)
