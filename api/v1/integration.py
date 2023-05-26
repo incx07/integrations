@@ -5,7 +5,7 @@ from pydantic import ValidationError, parse_obj_as
 
 from tools import api_tools, auth, db
 from ...models.integration import IntegrationProject, IntegrationAdmin
-from ...models.pd.integration import IntegrationPD, IntegrationProjectPD
+from ...models.pd.integration import IntegrationPD
 
 
 class ProjectAPI(api_tools.APIModeHandler):
@@ -41,7 +41,7 @@ class ProjectAPI(api_tools.APIModeHandler):
             if request.json.get('is_default'):
                 self.module.make_default_integration(db_integration, project_id)
             try:
-                return IntegrationProjectPD.from_orm(db_integration).dict(), 200
+                return IntegrationPD.from_orm(db_integration).dict(), 200
             except ValidationError as e:
                 return e.errors(), 400            
 
@@ -74,7 +74,7 @@ class ProjectAPI(api_tools.APIModeHandler):
             db_integration.settings = settings.dict()
             db_integration.config = request.json.get('config')
             db_integration.insert(tenant_session)
-            return IntegrationProjectPD.from_orm(db_integration).dict(), 200
+            return IntegrationPD.from_orm(db_integration).dict(), 200
 
     @auth.decorators.check_api({
         "permissions": ["configuration.integrations.integrations.edit"],

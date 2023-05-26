@@ -8,7 +8,7 @@ from sqlalchemy import desc, asc
 from pydantic import parse_obj_as, ValidationError
 
 from ..models.integration import IntegrationProject, IntegrationAdmin, IntegrationDefault
-from ..models.pd.integration import IntegrationPD, SecretField, IntegrationProjectPD
+from ..models.pd.integration import IntegrationPD, SecretField, IntegrationDefaultPD
 from ..models.pd.registration import RegistrationForm, SectionRegistrationForm
 
 from tools import rpc_tools, VaultClient, db
@@ -51,12 +51,13 @@ class RPC:
                 desc(IntegrationProject.id)
             ).all()
 
-        results = parse_obj_as(List[IntegrationProjectPD], results)
+        results = parse_obj_as(List[IntegrationPD], results)
+        results = self.process_default_integrations(project_id, results)
 
         if not group_by_section:
             return results
 
-        def reducer(accum: dict, new_value: IntegrationProjectPD) -> dict:
+        def reducer(accum: dict, new_value: IntegrationPD) -> dict:
             accum[new_value.section.name].append(new_value)
             return accum
 
@@ -64,7 +65,7 @@ class RPC:
 
     @rpc('get_project_integrations_by_name')
     def get_project_integrations_by_name(self, project_id: Optional[int], integration_name: str
-                                         ) -> List[IntegrationProjectPD]:
+                                         ) -> List[IntegrationPD]:
         if integration_name not in self.integrations.keys():
             return []
         with db.with_project_schema_session(project_id) as tenant_session:
@@ -77,12 +78,12 @@ class RPC:
                 asc(IntegrationProject.name),
                 desc(IntegrationProject.id)
             ).all()
-        results = parse_obj_as(List[IntegrationProjectPD], results)
-        return results
+        results = parse_obj_as(List[IntegrationPD], results)
+        return self.process_default_integrations(project_id, results)
 
     @rpc('get_project_integrations_by_section')
     def get_project_integrations_by_section(self, project_id: Optional[int], section_name: str,
-                                            ) -> List[IntegrationProjectPD]:
+                                            ) -> List[IntegrationPD]:
         if section_name not in self.sections.keys():
             return []
         with db.with_project_schema_session(project_id) as tenant_session:
@@ -94,8 +95,8 @@ class RPC:
                 asc(IntegrationProject.name),
                 desc(IntegrationProject.id)
             ).all()
-        results = parse_obj_as(List[IntegrationProjectPD], results)
-        return results
+        results = parse_obj_as(List[IntegrationPD], results)
+        return self.process_default_integrations(project_id, results)
 
     @rpc('register_section')
     @rpc_tools.wrap_exceptions(ValidationError)
@@ -344,13 +345,32 @@ class RPC:
         results = parse_obj_as(List[IntegrationPD], results)
         return results
 
+    # @rpc('process_default_integrations')
+    # def process_default_integrations(self, project_id, integrations):
+    #     for integration in integrations:
+    #         integration.is_default = False
+    #         if self.is_default(project_id, integration.dict()):
+    #             integration.is_default = True
+    #     return integrations
+
     @rpc('process_default_integrations')
     def process_default_integrations(self, project_id, integrations):
+        default_integrations = self.get_defaults(project_id)
+
+        def _is_default(default_integrations, integration):
+            for default_integration in default_integrations:
+                if (integration.project_id == default_integration.project_id and 
+                    integration.name == default_integration.name and 
+                    integration.id == default_integration.integration_id
+                ):
+                    return True
+            return False                   
+
         for integration in integrations:
             integration.is_default = False
-            if self.is_default(project_id, integration.dict()):
+            if _is_default(default_integrations, integration):
                 integration.is_default = True
-        return integrations
+        return sorted(integrations, key=lambda i: not i.is_default)
 
     @rpc('get_all_integrations')
     def get_all_integrations(self, project_id: int, group_by_section: bool = True) -> dict:
@@ -363,7 +383,7 @@ class RPC:
                 IntegrationProject.id
             ).order_by(
                 asc(IntegrationProject.section),
-                desc(IntegrationProject.is_default),
+                # desc(IntegrationProject.is_default),
                 asc(IntegrationProject.name),
                 desc(IntegrationProject.id)
             ).all()
@@ -378,10 +398,9 @@ class RPC:
             asc(IntegrationAdmin.name),
             desc(IntegrationAdmin.id)
         ).all()
-        results_project = parse_obj_as(List[IntegrationProjectPD], results_project)
+        results_project = parse_obj_as(List[IntegrationPD], results_project)
         results_admin = parse_obj_as(List[IntegrationPD], results_admin)
-        results_admin = self.process_default_integrations(project_id, results_admin)
-        results = results_project + results_admin
+        results = self.process_default_integrations(project_id, results_project + results_admin)
         if not group_by_section:
             return results
 
@@ -392,16 +411,16 @@ class RPC:
 
     @rpc('get_all_integrations_by_name')
     def get_all_integrations_by_name(self, project_id: int, integration_name: str) -> List[IntegrationPD]:
+        results_project = self.get_project_integrations_by_name(project_id, integration_name)
         results_admin = self.get_administration_integrations_by_name(integration_name)
-        results_admin = self.process_default_integrations(project_id, results_admin)
-        return self.get_project_integrations_by_name(project_id, integration_name) + results_admin
+        return self.process_default_integrations(project_id, results_project + results_admin)
 
 
     @rpc('get_all_integrations_by_section')
     def get_all_integrations_by_section(self, project_id: int, section_name: str) -> List[IntegrationPD]:
+        results_project = self.get_project_integrations_by_section(project_id, section_name)
         results_admin = self.get_administration_integrations_by_section(section_name)
-        results_admin = self.process_default_integrations(project_id, results_admin)
-        return self.get_project_integrations_by_section(project_id, section_name) + results_admin
+        return self.process_default_integrations(project_id, results_project + results_admin)
 
     @rpc('update_attrs')
     def update_attrs(self, integration_id: int, project_id: int, update_dict: dict, return_result: bool = False
@@ -452,7 +471,8 @@ class RPC:
     @rpc('get_defaults')
     def get_defaults(self, project_id):
         with db.with_project_schema_session(project_id) as tenant_session: 
-            return tenant_session.query(IntegrationDefault).all()
+            results = tenant_session.query(IntegrationDefault).all()
+            return parse_obj_as(List[IntegrationDefaultPD], results)
 
     @rpc('is_default')
     def is_default(self, project_id, integration_data):

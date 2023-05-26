@@ -57,12 +57,25 @@ class IntegrationPD(IntegrationBase):
         return value
 
 
-class IntegrationProjectPD(IntegrationPD):
-    @validator("is_default")
-    def validate_is_default(cls, value, values):
-        if rpc_tools.RpcMixin().rpc.call.integrations_is_default(values['project_id'], values):
-            return True
-        return False
+# class IntegrationProjectPD(IntegrationPD):
+#     pass
+    # @validator("is_default")
+    # def validate_is_default(cls, value, values):
+    #     if rpc_tools.RpcMixin().rpc.call.integrations_is_default(values['project_id'], values):
+    #         return True
+    #     return False
+
+
+class IntegrationDefaultPD(BaseModel):
+    id: int
+    name: str
+    integration_id: int
+    project_id: Optional[int]
+    is_default: bool = True
+    section: Union[str, SectionRegistrationForm]
+
+    class Config:
+        orm_mode = True
 
 
 class SecretField(BaseModel):
