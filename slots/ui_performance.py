@@ -14,6 +14,7 @@ class Slot:
                 'ui_performance/content.html',
                 processing=self.get_section('processing'),
                 reporters=self.get_section('reporters'),
+                system=self.get_section('system'),
                 instance_name_prefix=payload.get('instance_name_prefix', '')
             )
 
@@ -24,7 +25,8 @@ class Slot:
             return self.descriptor.render_template(
                 'ui_performance/scripts.html',
                 processing=self.get_section('processing'),
-                reporters=self.get_section('reporters')
+                reporters=self.get_section('reporters'),
+                system=self.get_section('system')
             )
 
     @web.slot('integrations_ui_performance_styles')
@@ -33,5 +35,6 @@ class Slot:
         with context.app.app_context():
             return self.descriptor.render_template(
                 'ui_performance/styles.html',
-                reporters=self.get_section('reporters')
+                reporters=self.get_section('reporters'),
+                system=self.get_section('system')
             )

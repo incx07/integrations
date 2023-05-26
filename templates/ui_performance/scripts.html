@@ -2,3 +2,6 @@
 {% if reporters %}
     {{ template_slot("ui_performance_%s_scripts" | format(reporters.name)) | safe }}
 {% endif %}
+{% if system %}
+    {{ template_slot("ui_performance_%s_scripts" | format(system.name)) | safe }}
+{% endif %}

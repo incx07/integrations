@@ -95,7 +95,7 @@ const TestIntegrationItem = {
     },
     methods: {
         getIntegrationTitle(integration) {
-            return integration.is_default ? `${integration.description} - default` : integration.description
+            return integration.is_default ? `${integration.config?.name} - default` : integration.config?.name
         },
         clear_data() {
             this.is_selected = false
