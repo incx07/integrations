@@ -71,7 +71,7 @@ const TestIntegrationItem = {
         }
     },
     mounted() {
-        this.selected_integration = this.default_integration?.id
+        this.selected_integration = this.get_integration_value(this.default_integration)
     },
     computed: {
         selector_id() {
@@ -84,7 +84,11 @@ const TestIntegrationItem = {
             return this.project_integrations.find(item => item.is_default)
         },
         integration_data() {
-            return this.project_integrations.find(item => item.id === this.selected_integration)
+            return this.project_integrations.find(item => this.get_integration_value(item) === this.selected_integration)
+        },
+        selected_integration_id() {
+            const integration_id = this.selected_integration?.split('#')[0] 
+            return integration_id && parseInt(integration_id)
         }
     },
     watch: {
@@ -95,22 +99,33 @@ const TestIntegrationItem = {
     },
     methods: {
         getIntegrationTitle(integration) {
-            return integration.is_default ? `${integration.description} - default` : integration.description
+            return integration.is_default ? `${integration.config?.name} - default` : integration.config?.name
         },
         clear_data() {
             this.is_selected = false
-            this.selected_integration = this.default_integration?.id
+            this.selected_integration = this.get_integration_value(this.default_integration)
             $(`#${this.selector_id}`).collapse('hide')
             $(`#${this.settings_id}`).collapse('hide')
             this.clear_errors()
         },
-        set_data({id}) {
+        set_data({id, is_local}) {
             console.debug('TestIntegrationItem receiving set_data', {
                 id,
+                is_local,
                 selected_integration: this.selected_integration
             })
-            !this.project_integrations.find(item => item.id === id) && this.handle_id_error()
-            this.selected_integration = id
+            const integration_obj = this.project_integrations.find(
+                item => {
+                    if (item.id === id) {
+                        if (is_local !== undefined) {
+                            return !!(item.project_id) === is_local
+                            }
+                        return true
+                        }
+                    }
+                )
+            !integration_obj && this.handle_id_error()
+            this.selected_integration = this.get_integration_value(integration_obj)
             this.is_selected = true
             $(`#${this.selector_id}`).collapse('show')
         },
@@ -125,6 +140,9 @@ const TestIntegrationItem = {
         },
         clear_errors() {
             this.errors = {}
+        },
+        get_integration_value(integration) {
+            return `${integration?.id}#${integration?.project_id}`
         }
     },
     template: `
@@ -160,13 +178,13 @@ const TestIntegrationItem = {
         </div>
         <div>
             <div class="collapse" style="padding-bottom: 20px" :id="selector_id">
-                <div v-if="this.selected_integration !== 'quality_gate'" class="select-validation"
+                <div v-if="this.selected_integration !== 'quality_gate#undefined'" class="select-validation"
                     :class="{'invalid-select': this.errors.id}">
                     <select class="selectpicker bootstrap-select__b" data-style="btn"
                         v-model="selected_integration">
                         <option
                             v-for="integration in project_integrations"
-                            :value="integration.id"
+                            :value="get_integration_value(integration)"
                             :title="getIntegrationTitle(integration)"
                         >
                             [[ getIntegrationTitle(integration) ]]
@@ -179,7 +197,7 @@ const TestIntegrationItem = {
                     name="selector"
                     :on_set_data="set_data" 
                     :on_clear_data="clear_data"
-                    :selected_integration="selected_integration"
+                    :selected_integration="selected_integration_id"
                     :integration_data="integration_data"
                     :is_selected="is_selected"
                 ></slot>
@@ -191,7 +209,7 @@ const TestIntegrationItem = {
                     name="settings"
                     :on_set_data="set_data" 
                     :on_clear_data="clear_data" 
-                    :selected_integration="selected_integration"
+                    :selected_integration="selected_integration_id"
                     :integration_data="integration_data"
                     :is_selected="is_selected"
                 ></slot>

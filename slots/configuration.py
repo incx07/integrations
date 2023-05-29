@@ -49,7 +49,6 @@ class Slot:  # pylint: disable=E1101,R0903
             # i['integrations'] = existing_integrations.get(i['name'], [])
             i['integrations'] = list(map(lambda x: x.dict(), existing_integrations.get(i['name'], [])))
             # i['integrations_parsed'] = [pd.dict() for pd in i['integrations']]
-
         with context.app.app_context():
             return self.descriptor.render_template(
                 'configuration/content.html',

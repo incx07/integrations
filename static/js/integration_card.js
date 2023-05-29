@@ -1,5 +1,5 @@
 const IntegrationCard = {
-    props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id', 'status'],
+    props: ['id', 'name', 'section', 'settings', 'is_default', 'config', 'task_id', 'status'],
     delimiters: ['[[', ']]'],
     computed: {
         reflected_component() {
@@ -7,6 +7,7 @@ const IntegrationCard = {
             !obj && console.warn('No reflected component found for', this.name)
             obj && !obj.handleEdit && console.warn('.handleEdit method not implemented for for', this.name)
             obj && !obj.handleDelete && console.warn('.handleDelete method not implemented for for', this.name)
+            obj && !obj.handleSetDefault && console.warn('.handleSetDefault method not implemented for for', this.name)
             return obj
         },
         display_name() {
@@ -47,7 +48,7 @@ const IntegrationCard = {
     <img class="integration_icon h-12 w-12 object-contain mr-3" :class="circle_class" :src="logo">
     <div class="d-flex flex-column flex-grow-1 justify-content-between">
         <p class="font-h4 font-bold">[[ display_name ]]</p>
-        <p class="font-h6 font-weight-400 integration_description">[[ description ]]</p>
+        <p class="font-h6 font-weight-400 integration_description">[[ config.name ]]</p>
     </div>
     <div class="d-flex flex-column justify-content-between align-items-end">
         <div class="d-flex justify-content-end align-items-center">

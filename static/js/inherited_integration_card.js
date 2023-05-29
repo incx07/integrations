@@ -1,5 +1,5 @@
 const InheritedIntegrationCard = {
-    props: ['id', 'name', 'section', 'settings', 'is_default', 'description', 'task_id', 'status'],
+    props: ['id', 'name', 'section', 'settings', 'is_default', 'config', 'task_id', 'status'],
     delimiters: ['[[', ']]'],
     computed: {
         reflected_component() {
@@ -8,7 +8,6 @@ const InheritedIntegrationCard = {
             obj && !obj.handleEdit && console.warn('.handleEdit method not implemented for for', this.name)
             obj && !obj.handleDelete && console.warn('.handleDelete method not implemented for for', this.name)
             obj && !obj.handleSetDefault && console.warn('.handleSetDefault method not implemented for for', this.name)
-            console.log('obj', obj)
             return obj
         },
         display_name() {
@@ -18,7 +17,6 @@ const InheritedIntegrationCard = {
             return this.reflected_component?.logo_src
         },
         circle_class() {
-            // console.log(`mode ${mode}`)
             switch (this.status) {
                 case window.integration_status.success:
                     return 'integration_icon_success'
@@ -31,7 +29,7 @@ const InheritedIntegrationCard = {
     },
     methods: {
         handle_set_default() {
-            this.reflected_component.handleSetDefault(this.id)
+            this.reflected_component.handleSetDefault(this.id, local=false)
         },
     },
     watch: {
@@ -44,7 +42,7 @@ const InheritedIntegrationCard = {
     <img class="integration_icon h-12 w-12 object-contain mr-3" :class="circle_class" :src="logo">
     <div class="d-flex flex-column flex-grow-1 justify-content-between">
         <p class="font-h4 font-bold">[[ display_name ]]</p>
-        <p class="font-h6 font-weight-400 integration_description">[[ description ]]</p>
+        <p class="font-h6 font-weight-400 integration_description">[[ config.name ]]</p>
     </div>
     <div class="d-flex flex-column justify-content-between align-items-end">
         <div class="d-flex justify-content-end align-items-center">

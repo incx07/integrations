@@ -1,9 +1,11 @@
 from pylon.core.tools import web
+from tools import auth, theme
 
 
 class Slot:
 
     @web.slot('integrations_security_dependency_content')
+    # @auth.decorators.check_slot(["configuration.integrations"])
     def content(self, context, slot, payload):
         with context.app.app_context():
             allowed_sections = (
@@ -21,6 +23,7 @@ class Slot:
             )
 
     @web.slot('integrations_security_dependency_scripts')
+    # @auth.decorators.check_slot(["configuration.integrations"])
     def scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
@@ -29,6 +32,7 @@ class Slot:
             )
 
     @web.slot('integrations_security_dependency_styles')
+    # @auth.decorators.check_slot(["configuration.integrations"])
     def styles(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(

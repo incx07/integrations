@@ -70,18 +70,17 @@ const IntegrationSections = {
                     <p class="font-h6 font-weight-400 text-gray-700">[[ section.integration_description ]]</p>
                 </div>
                 <div>
-                    <p v-if="section.integrations.filter(i => i.mode !== 'default').length" class="font-h6 font-semibold text-gray-600 mt-4">INHERITED:</p>
-<!--                    <div class="d-flex section_cards gap-4">-->
+                    <p v-if="section.integrations.filter(i => !i.project_id).length" class="font-h6 font-semibold text-gray-600 mt-4">INHERITED:</p>
                     <div class="d-grid section_cards gap-4 grid-column-4 mb-3">
                         <Inherited-Integration-Card
-                            v-for="integration in section.integrations.filter(i => i.mode !== 'default')"
+                            v-for="integration in section.integrations.filter(i => !i.project_id)"
                             v-bind="integration"
                         ></Inherited-Integration-Card>
                     </div>
-                    <p v-if="section.integrations.filter(i => i.mode === 'default').length" class="font-h6 font-semibold text-gray-600 mt-4">LOCAL:</p>
+                    <p v-if="section.integrations.filter(i => i.project_id).length" class="font-h6 font-semibold text-gray-600 mt-4">LOCAL:</p>
                     <div class="d-grid section_cards gap-4 grid-column-4 mb-3">
                         <Integration-Card
-                            v-for="integration in section.integrations.filter(i => i.mode === 'default')"
+                            v-for="integration in section.integrations.filter(i => i.project_id)"
                             v-bind="integration"
                         ></Integration-Card>
                     </div>

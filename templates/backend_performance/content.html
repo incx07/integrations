@@ -35,3 +35,23 @@
         </div>
     </div>
 {% endif %}
+
+{% if system %}
+    <div class="section integration_section">
+        <div class="row">
+            <div class="col">
+                <p class="font-h5 font-bold font-uppercase integration_section_name">
+                    {{- system.name | capitalize -}}
+                </p>
+                <p class="font-h6 font-weight-400">
+                        {{- system.test_planner_description | safe -}}
+                </p>
+            </div>
+        </div>
+        <div class="d-grid grid-column-2 gap-50 grid-items-start mt-4" id="backend_performance_system_section">
+            {{ template_slot("backend_performance_system_content", payload={
+                            'instance_name_prefix': instance_name_prefix
+                            }) | safe }}
+        </div>
+    </div>
+{% endif %}
