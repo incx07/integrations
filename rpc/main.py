@@ -4,7 +4,7 @@ from queue import Empty
 from typing import Optional, List
 
 from pylon.core.tools import log
-from sqlalchemy import desc, asc
+from sqlalchemy import desc, asc, Boolean
 from pydantic import parse_obj_as, ValidationError
 
 from ..models.integration import IntegrationProject, IntegrationAdmin, IntegrationDefault
@@ -315,12 +315,16 @@ class RPC:
         return reduce(reducer, results, defaultdict(list))
 
     @rpc('get_administration_integrations_by_name')
-    def get_administration_integrations_by_name(self, integration_name: str) -> List[
-        IntegrationPD]:
+    def get_administration_integrations_by_name(self, integration_name: str, 
+                                                only_shared: bool = False
+                                                ) -> List[IntegrationPD]:
         if integration_name not in self.integrations.keys():
             return []
+        filters = [IntegrationAdmin.name == integration_name]
+        if only_shared:
+            filters.append(IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True)
         results = IntegrationAdmin.query.filter(
-            IntegrationAdmin.name == integration_name
+            *filters
         ).order_by(
             asc(IntegrationAdmin.section),
             desc(IntegrationAdmin.is_default),
@@ -331,12 +335,16 @@ class RPC:
         return results
 
     @rpc('get_administration_integrations_by_section')
-    def get_administration_integrations_by_section(self, section_name: str) -> List[
-        IntegrationPD]:
+    def get_administration_integrations_by_section(self, section_name: str,
+                                                   only_shared: bool = False
+                                                   ) -> List[IntegrationPD]:
         if section_name not in self.sections.keys():
             return []
+        filters = [IntegrationAdmin.section == section_name]
+        if only_shared:
+            filters.append(IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True)
         results = IntegrationAdmin.query.filter(
-            IntegrationAdmin.section == section_name,
+            *filters
         ).order_by(
             desc(IntegrationAdmin.is_default),
             asc(IntegrationAdmin.name),
@@ -388,7 +396,8 @@ class RPC:
                 desc(IntegrationProject.id)
             ).all()
         results_admin = IntegrationAdmin.query.filter(
-            IntegrationAdmin.name.in_(self.integrations.keys())
+            IntegrationAdmin.name.in_(self.integrations.keys()),
+            IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
         ).group_by(
             IntegrationAdmin.section,
             IntegrationAdmin.id
@@ -412,28 +421,40 @@ class RPC:
     @rpc('get_all_integrations_by_name')
     def get_all_integrations_by_name(self, project_id: int, integration_name: str) -> List[IntegrationPD]:
         results_project = self.get_project_integrations_by_name(project_id, integration_name)
-        results_admin = self.get_administration_integrations_by_name(integration_name)
+        results_admin = self.get_administration_integrations_by_name(integration_name, True)
         return self.process_default_integrations(project_id, results_project + results_admin)
 
 
     @rpc('get_all_integrations_by_section')
     def get_all_integrations_by_section(self, project_id: int, section_name: str) -> List[IntegrationPD]:
         results_project = self.get_project_integrations_by_section(project_id, section_name)
-        results_admin = self.get_administration_integrations_by_section(section_name)
+        results_admin = self.get_administration_integrations_by_section(section_name, True)
         return self.process_default_integrations(project_id, results_project + results_admin)
 
     @rpc('update_attrs')
-    def update_attrs(self, integration_id: int, project_id: int, update_dict: dict, return_result: bool = False
-                     ) -> Optional[dict]:
-        with db.with_project_schema_session(project_id) as tenant_session:        
-            log.info('update_attrs called %s', [integration_id, project_id, update_dict])
-            update_dict.pop('id', None)
-            tenant_session.query(IntegrationProject).filter(
-                IntegrationProject.id == integration_id
+    def update_attrs(self, 
+            integration_id: int, 
+            project_id: Optional[int], 
+            update_dict: dict, 
+            return_result: bool = False
+        ) -> Optional[dict]:
+        update_dict.pop('id', None)
+        if project_id:
+            with db.with_project_schema_session(project_id) as tenant_session:        
+                log.info('update_attrs called %s', [integration_id, project_id, update_dict])
+                tenant_session.query(IntegrationProject).filter(
+                    IntegrationProject.id == integration_id
+                ).update(update_dict)
+                tenant_session.commit()
+                if return_result:
+                    return tenant_session.query(IntegrationProject).get(integration_id).to_json()
+        else:
+            IntegrationAdmin.query.filter(
+                IntegrationAdmin.id == integration_id
             ).update(update_dict)
-            tenant_session.commit()
+            IntegrationAdmin.commit()
             if return_result:
-                return tenant_session.query(IntegrationProject).get(integration_id).to_json()
+                return IntegrationAdmin.query.get(integration_id).to_json()
 
     @rpc('make_default_integration')
     def make_default_integration(self, integration, project_id):
@@ -486,6 +507,7 @@ class RPC:
 
     @rpc('get_s3_settings')
     def get_s3_settings(self, project_id, integration_id=None, is_local=True):
+        integration_name = 's3_integration'
 
         def _usecret_field(integration_db):
             settings = integration_db.settings
@@ -498,14 +520,15 @@ class RPC:
                 with db.with_project_schema_session(project_id) as tenant_session:
                     integration_db = tenant_session.query(IntegrationProject).filter(
                         IntegrationProject.id == integration_id,
-                        IntegrationProject.name == 's3_integration'
+                        IntegrationProject.name == integration_name
                     ).one_or_none()
                     if integration_db:
                         return _usecret_field(integration_db)
             elif integration_id:
                 integration_db = IntegrationAdmin.query.filter(
                     IntegrationAdmin.id == integration_id, 
-                    IntegrationAdmin.name == 's3_integration'
+                    IntegrationAdmin.name == integration_name,
+                    IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
                 ).one_or_none()
                 if integration_db:
                     return _usecret_field(integration_db)
@@ -513,19 +536,20 @@ class RPC:
             else: 
                 with db.with_project_schema_session(project_id) as tenant_session:
                     default_integration = tenant_session.query(IntegrationDefault).filter(
-                        IntegrationDefault.name == 's3_integration'
+                        IntegrationDefault.name == integration_name
                     ).one_or_none()
                     if default_integration and default_integration.project_id:
                         integration_db = tenant_session.query(IntegrationProject).filter(
                             IntegrationProject.id == default_integration.integration_id,
-                            IntegrationProject.name == 's3_integration'
+                            IntegrationProject.name == integration_name
                         ).one_or_none()
                         if integration_db:
                             return _usecret_field(integration_db)
                     elif default_integration:
                         integration_db = IntegrationAdmin.query.filter(
                             IntegrationAdmin.id == default_integration.integration_id,
-                            IntegrationAdmin.name == 's3_integration'
+                            IntegrationAdmin.name == integration_name,
+                            IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
                         ).one_or_none()
                         if integration_db:
                             return _usecret_field(integration_db)
