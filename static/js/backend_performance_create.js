@@ -176,20 +176,22 @@ const TestIntegrationItem = {
         </div>
         <div>
             <div class="collapse pb-20" :id="selector_id">
-                <p class="font-h6 font-semibold mb-1">Integrated account</p>
-                <div v-if="this.selected_integration !== 'quality_gate#undefined'" class="select-validation" 
-                    :class="{'invalid-select': this.errors.id}">
-                    <select class="selectpicker bootstrap-select__b" data-style="btn"
-                        v-model="selected_integration">
-                        <option
-                            v-for="integration in project_integrations"
-                            :value="get_integration_value(integration)"
-                            :title="getIntegrationTitle(integration)"
-                        >
-                            [[ getIntegrationTitle(integration) ]]
-                        </option>
-                    </select>
-                    <span class="select_error-msg">[[ errors.id ]]</span>
+                <div v-if="this.selected_integration !== 'quality_gate#undefined'"> 
+                    <p class="font-h6 font-semibold mb-1">Integrated account</p>
+                    <div class="select-validation" 
+                        :class="{'invalid-select': this.errors.id}">
+                        <select class="selectpicker bootstrap-select__b" data-style="btn"
+                            v-model="selected_integration">
+                            <option
+                                v-for="integration in project_integrations"
+                                :value="get_integration_value(integration)"
+                                :title="getIntegrationTitle(integration)"
+                            >
+                                [[ getIntegrationTitle(integration) ]]
+                            </option>
+                        </select>
+                        <span class="select_error-msg">[[ errors.id ]]</span>
+                    </div>
                 </div>
                 
                 <slot 
