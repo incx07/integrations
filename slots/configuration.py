@@ -1,7 +1,7 @@
 from pylon.core.tools import web, log
 # from flask import g
 from flask import make_response, after_this_request
-from tools import session_project, auth, theme
+from tools import auth, theme
 from datetime import datetime
 
 
@@ -33,6 +33,8 @@ class Slot:  # pylint: disable=E1101,R0903
     @web.slot('integrations_configuration_content')
     @auth.decorators.check_slot(["configuration.integrations"], access_denied_reply=theme.access_denied_part)
     def content(self, context, slot, payload):
+        from tools import session_project
+        
         @after_this_request
         def add_header(response):
             response.headers['Cache-Control'] = 'max-age=0, must-revalidate'

@@ -83,8 +83,8 @@ const TestConnectionButton = {
 
 const ModalDialog = {
     delimiters: ['[[', ']]'],
-    props: ['display_name', 'id', 'name', 'is_default', 'is_fetching'],
-    emits: ['update', 'create', 'update:name', 'update:is_default'],
+    props: ['display_name', 'id', 'name', 'is_default', 'is_shared', 'is_fetching'],
+    emits: ['update', 'create', 'update:name', 'update:is_default', 'update:is_shared'],
     template: `
 <div class="modal-dialog modal-dialog-aside" role="document">
     <div class="modal-content">
@@ -129,6 +129,15 @@ const ModalDialog = {
                                 @input="$emit('update:is_default', $event.target.checked)"
                                >
                         <p class="font-h5 font-semibold">Set as default</p>
+                    </label>
+                </div>
+                <div v-if="$root.mode === 'administration'" class="mt-3">
+                    <label class="custom-checkbox d-flex align-items-center">
+                        <input class="mr-2.5" type="checkbox"
+                                :checked="Boolean(is_shared)"
+                                @input="$emit('update:is_shared', $event.target.checked)"
+                               >
+                        <p class="font-h5 font-semibold">Share with projects</p>
                     </label>
                 </div>
             </div>

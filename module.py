@@ -17,7 +17,10 @@
 
 """ Module """
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
-from pylon.core.tools import module  # pylint: disable=E0611,E0401
+from pylon.core.tools import module
+
+from .models.integration import IntegrationAdmin  # pylint: disable=E0611,E0401
+from .models.pd.integration import IntegrationBase
 
 from .init_db import init_db
 
