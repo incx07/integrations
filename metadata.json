@@ -1,5 +1,5 @@
 {
   "name": "Integrations plugin",
-  "version": "0.2",
-  "depends_on": ["projects"]
+  "version": "0.3",
+  "depends_on": []
 }

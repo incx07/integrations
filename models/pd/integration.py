@@ -5,7 +5,7 @@ from pylon.core.tools import log
 
 from .registration import SectionRegistrationForm
 
-from tools import rpc_tools, VaultClient, session_project
+from tools import rpc_tools
 
 
 class IntegrationBase(BaseModel):
@@ -83,6 +83,7 @@ class SecretField(BaseModel):
     value: str
 
     def unsecret(self, project_id: Optional[int] = None):
+        from tools import VaultClient
         if self.from_secrets:
             if project_id:
                 client = VaultClient.from_project(project_id)
