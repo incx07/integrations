@@ -114,6 +114,7 @@ class IntegrationProject(db_tools.AbstractBaseMixin, db.Base, rpc_tools.RpcMixin
         session.commit()
         inherited_integration = IntegrationAdmin.query.filter(
             IntegrationAdmin.name == self.name,
+            IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True,
         ).first()
         default_integration = session.query(IntegrationDefault).filter(
             IntegrationDefault.name == self.name,

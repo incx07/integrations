@@ -17,6 +17,13 @@ from tools import constants as c
 from pylon.core.tools import web
 
 
+def _usecret_field(integration_db, project_id):
+    settings = integration_db.settings
+    secret_access_key = SecretField.parse_obj(settings['secret_access_key'])
+    settings['secret_access_key'] = secret_access_key.unsecret(project_id=project_id)
+    return settings
+
+
 class RPC:
     rpc = lambda name: web.rpc(f'integrations_{name}', name)
 
@@ -490,8 +497,14 @@ class RPC:
                 tenant_session.commit()
 
     @rpc('get_defaults')
-    def get_defaults(self, project_id):
+    def get_defaults(self, project_id, name=None):
         with db.with_project_schema_session(project_id) as tenant_session: 
+            if name:
+                integration = tenant_session.query(IntegrationDefault).filter(
+                    IntegrationDefault.name == name,
+                ).one_or_none()
+                if integration:
+                    return IntegrationDefaultPD.from_orm(integration)
             results = tenant_session.query(IntegrationDefault).all()
             return parse_obj_as(List[IntegrationDefaultPD], results)
 
@@ -508,13 +521,6 @@ class RPC:
     @rpc('get_s3_settings')
     def get_s3_settings(self, project_id, integration_id=None, is_local=True):
         integration_name = 's3_integration'
-
-        def _usecret_field(integration_db):
-            settings = integration_db.settings
-            secret_access_key = SecretField.parse_obj(settings['secret_access_key'])
-            settings['secret_access_key'] = secret_access_key.unsecret(project_id=project_id)
-            return settings
-        
         try:
             if integration_id and is_local:
                 with db.with_project_schema_session(project_id) as tenant_session:
@@ -523,7 +529,7 @@ class RPC:
                         IntegrationProject.name == integration_name
                     ).one_or_none()
                     if integration_db:
-                        return _usecret_field(integration_db)
+                        return _usecret_field(integration_db, project_id)
             elif integration_id:
                 integration_db = IntegrationAdmin.query.filter(
                     IntegrationAdmin.id == integration_id, 
@@ -531,7 +537,7 @@ class RPC:
                     IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
                 ).one_or_none()
                 if integration_db:
-                    return _usecret_field(integration_db)
+                    return _usecret_field(integration_db, project_id)
             # in case if integration_id is not provided - try to find default integration:
             else: 
                 with db.with_project_schema_session(project_id) as tenant_session:
@@ -544,7 +550,7 @@ class RPC:
                             IntegrationProject.name == integration_name
                         ).one_or_none()
                         if integration_db:
-                            return _usecret_field(integration_db)
+                            return _usecret_field(integration_db, project_id)
                     elif default_integration:
                         integration_db = IntegrationAdmin.query.filter(
                             IntegrationAdmin.id == default_integration.integration_id,
@@ -552,6 +558,48 @@ class RPC:
                             IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
                         ).one_or_none()
                         if integration_db:
-                            return _usecret_field(integration_db)
+                            return _usecret_field(integration_db, project_id)
         except Exception as e:
-            log.warning(f'Cannot receive S3 settings of project {project_id}')
+            log.warning(f'Cannot receive S3 settings for project {project_id}')
+            log.warning(e)
+
+    @rpc('get_s3_admin_settings')
+    def get_s3_admin_settings(self, integration_id=None):
+        integration_name = 's3_integration'
+        try:
+            if integration_id:
+                integration_db = IntegrationAdmin.query.filter(
+                    IntegrationAdmin.id == integration_id, 
+                    IntegrationAdmin.name == integration_name,
+                ).one_or_none()
+                if integration_db:
+                    return _usecret_field(integration_db, None)
+            # in case if integration_id is not provided - try to find default integration:
+            else: 
+                integration_db = IntegrationAdmin.query.filter(
+                    IntegrationAdmin.name == integration_name,
+                    IntegrationAdmin.is_default == True,
+                ).one_or_none()
+                if integration_db:
+                    return _usecret_field(integration_db, None)
+        except Exception as e:
+            log.warning(f'Cannot receive S3 settings in administration mode')
+            log.warning(e)
+
+    @rpc('create_default_s3_for_new_project')
+    def create_default_s3_for_new_project(self, project_id):
+        integration_db = IntegrationAdmin.query.filter(
+            IntegrationAdmin.name == 's3_integration',
+            IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True,
+            IntegrationAdmin.is_default == True,
+        ).one_or_none()
+        if integration_db:
+            with db.with_project_schema_session(project_id) as tenant_session:
+                default_integration = IntegrationDefault(name=integration_db.name,
+                                                        project_id=None, 
+                                                        integration_id = integration_db.id,
+                                                        is_default=True,
+                                                        section=integration_db.section
+                                                        )
+                tenant_session.add(default_integration)
+                tenant_session.commit()
