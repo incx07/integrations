@@ -285,8 +285,8 @@ class RPC:
 
         cloud_regions = [
             {
-                "name": f"{region.name.split('_')[0]} {region.description}"
-                        f"{' - inherited' if region.mode == 'administration' else ''}"
+                "name": f"{region.name.split('_')[0]} {region.config.get('name')}"
+                        f"{' - shared' if region.config.get('is_shared') else ''}"
                         f"{' - default' if region.is_default else ''}",
                 "cloud_settings": {
                     "integration_name": region.name,
