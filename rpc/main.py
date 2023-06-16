@@ -173,6 +173,7 @@ class RPC:
     def backend_performance_test_create(
             self,
             data: dict,
+            project_id: int,
             skip_validation_if_undefined: bool = True,
             **kwargs
     ) -> dict:
@@ -187,6 +188,7 @@ class RPC:
                         func=f'backend_performance_test_create_integration_validate_{k}',
                         timeout=1,
                         data=v,
+                        project_id=project_id,
                         **kwargs
                     )
                 except Empty:
@@ -207,6 +209,7 @@ class RPC:
     def ui_performance_test_create(
             self,
             data: dict,
+            project_id: int,
             skip_validation_if_undefined: bool = True,
             **kwargs
     ) -> dict:
@@ -221,6 +224,7 @@ class RPC:
                         func=f'ui_performance_test_create_integration_validate_{k}',
                         timeout=1,
                         data=v,
+                        project_id=project_id,
                         **kwargs
                     )
                 except Empty:
