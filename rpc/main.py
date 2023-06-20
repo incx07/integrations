@@ -509,8 +509,9 @@ class RPC:
                 ).one_or_none()
                 if integration:
                     return IntegrationDefaultPD.from_orm(integration)
-            results = tenant_session.query(IntegrationDefault).all()
-            return parse_obj_as(List[IntegrationDefaultPD], results)
+            else:
+                results = tenant_session.query(IntegrationDefault).all()
+                return parse_obj_as(List[IntegrationDefaultPD], results)
 
     @rpc('is_default')
     def is_default(self, project_id, integration_data):
