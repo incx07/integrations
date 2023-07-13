@@ -161,7 +161,8 @@ const TestIntegrationItem = {
     },
     methods: {
         getIntegrationTitle(integration) {
-            return integration.is_default ? `${integration.description} - default` : integration.description
+            integrationName = integration.hasOwnProperty('config')? integration.config.name : integration.description 
+            return integration.is_default ? `${integrationName} - default` : integrationName
         },
         clear_data() {
             this.is_selected = false
