@@ -19,8 +19,8 @@
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import module
 
-from .models.integration import IntegrationAdmin  # pylint: disable=E0611,E0401
-from .models.pd.integration import IntegrationBase
+# from .models.integration import IntegrationAdmin  # pylint: disable=E0611,E0401
+# from .models.pd.integration import IntegrationBase
 
 from .init_db import init_db
 
@@ -46,6 +46,7 @@ class Module(module.ModuleModel):
         self.descriptor.init_blueprint()
         self.descriptor.init_api()
         self.descriptor.init_slots()
+        self.descriptor.init_events()
 
         theme.register_subsection(
             'configuration', 'integrations',
