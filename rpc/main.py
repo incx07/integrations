@@ -132,7 +132,6 @@ class RPC:
         return IntegrationAdmin.query.filter(
             IntegrationAdmin.id == integration_id,
         ).one_or_none()
-        
 
     @web.rpc('security_test_create_integrations')
     @rpc_tools.wrap_exceptions(ValidationError)
@@ -562,7 +561,7 @@ class RPC:
                             return _usecret_field(integration_db, project_id)
         except Exception as e:
             log.warning(f'Cannot receive S3 settings for project {project_id}')
-            log.warning(e)
+            log.debug(e)
 
     @rpc('get_s3_admin_settings')
     def get_s3_admin_settings(self, integration_id=None):
@@ -583,21 +582,21 @@ class RPC:
                     return _usecret_field(integration_db, None)
         except Exception as e:
             log.warning(f'Cannot receive S3 settings in administration mode')
-            log.warning(e)
+            log.debug(e)
 
-    @rpc('create_default_s3_for_new_project')
-    def create_default_s3_for_new_project(self, project_id):
-        if integration_db := IntegrationAdmin.query.filter(
-            IntegrationAdmin.name == 's3_integration',
-            IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True,
-            IntegrationAdmin.is_default == True,
-        ).one_or_none():
-            with db.with_project_schema_session(project_id) as tenant_session:
-                default_integration = IntegrationDefault(name=integration_db.name,
-                                                        project_id=None, 
-                                                        integration_id = integration_db.id,
-                                                        is_default=True,
-                                                        section=integration_db.section
-                                                        )
-                tenant_session.add(default_integration)
-                tenant_session.commit()
+    # @rpc('create_default_s3_for_new_project')
+    # def create_default_s3_for_new_project(self, project_id):
+    #     if integration_db := IntegrationAdmin.query.filter(
+    #         IntegrationAdmin.name == 's3_integration',
+    #         IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True,
+    #         IntegrationAdmin.is_default == True,
+    #     ).one_or_none():
+    #         with db.with_project_schema_session(project_id) as tenant_session:
+    #             default_integration = IntegrationDefault(name=integration_db.name,
+    #                                                     project_id=None,
+    #                                                     integration_id = integration_db.id,
+    #                                                     is_default=True,
+    #                                                     section=integration_db.section
+    #                                                     )
+    #             tenant_session.add(default_integration)
+    #             tenant_session.commit()
