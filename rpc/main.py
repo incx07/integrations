@@ -17,10 +17,12 @@ from tools import constants as c
 from pylon.core.tools import web
 
 
-def _usecret_field(integration_db, project_id):
+def _usecret_field(integration_db, project_id, is_local):
     settings = integration_db.settings
     secret_access_key = SecretField.parse_obj(settings['secret_access_key'])
     settings['secret_access_key'] = secret_access_key.unsecret(project_id=project_id)
+    settings['integration_id'] = integration_db.id
+    settings['is_local'] = is_local
     return settings
 
 
@@ -532,14 +534,14 @@ class RPC:
                         IntegrationProject.id == integration_id,
                         IntegrationProject.name == integration_name
                     ).one_or_none():
-                        return _usecret_field(integration_db, project_id)
+                        return _usecret_field(integration_db, project_id, is_local=True)
             elif integration_id:
                 if integration_db := IntegrationAdmin.query.filter(
                     IntegrationAdmin.id == integration_id, 
                     IntegrationAdmin.name == integration_name,
                     IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
                 ).one_or_none():
-                    return _usecret_field(integration_db, project_id)
+                    return _usecret_field(integration_db, project_id, is_local=False)
             # in case if integration_id is not provided - try to find default integration:
             else: 
                 with db.with_project_schema_session(project_id) as tenant_session:
@@ -551,14 +553,14 @@ class RPC:
                             IntegrationProject.id == default_integration.integration_id,
                             IntegrationProject.name == integration_name
                         ).one_or_none():
-                            return _usecret_field(integration_db, project_id)
+                            return _usecret_field(integration_db, project_id, is_local=True)
                     elif default_integration:
                         if integration_db := IntegrationAdmin.query.filter(
                             IntegrationAdmin.id == default_integration.integration_id,
                             IntegrationAdmin.name == integration_name,
                             IntegrationAdmin.config['is_shared'].astext.cast(Boolean) == True
                         ).one_or_none():
-                            return _usecret_field(integration_db, project_id)
+                            return _usecret_field(integration_db, project_id, is_local=False)
         except Exception as e:
             log.warning(f'Cannot receive S3 settings for project {project_id}')
             log.debug(e)
@@ -572,14 +574,14 @@ class RPC:
                     IntegrationAdmin.id == integration_id, 
                     IntegrationAdmin.name == integration_name,
                 ).one_or_none():
-                    return _usecret_field(integration_db, None)
+                    return _usecret_field(integration_db, None, is_local=False)
             # in case if integration_id is not provided - try to find default integration:
             else: 
                 if integration_db := IntegrationAdmin.query.filter(
                     IntegrationAdmin.name == integration_name,
                     IntegrationAdmin.is_default == True,
                 ).one_or_none():
-                    return _usecret_field(integration_db, None)
+                    return _usecret_field(integration_db, None, is_local=False)
         except Exception as e:
             log.warning(f'Cannot receive S3 settings in administration mode')
             log.debug(e)
