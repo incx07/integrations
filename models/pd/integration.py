@@ -1,4 +1,5 @@
 from typing import Optional, Union
+from uuid import uuid4
 
 from pydantic import BaseModel, validator, constr
 from pylon.core.tools import log
@@ -18,13 +19,19 @@ class IntegrationBase(BaseModel):
     config: dict
     task_id: Optional[str]
     status: Optional[str] = 'success'
-    # mode: str
+    uid: str
 
     class Config:
         orm_mode = True
 
 
 class IntegrationPD(IntegrationBase):
+    @validator('uid', pre=True, always=True)
+    def set_uid(cls, value: Optional[str]):
+        if not value:
+            return str(uuid4())
+        return value
+
     @validator("settings")
     def validate_settings(cls, value, values):
         integration = rpc_tools.RpcMixin().rpc.call.integrations_get_by_name(
@@ -44,26 +51,12 @@ class IntegrationPD(IntegrationBase):
             return rpc_tools.RpcMixin().rpc.call.integrations_register_section(name=value)
         return section
 
-    # @validator("config")
-    # def validate_config(cls, value, values):
-    #     assert value.get('name'), 'ensure this value has at least 1 characters'
-    #     return value
-
     @validator("config")
     def validate_description(cls, value, values):
         if not value.get('name'):
             value['name'] = f'Integration #{values["id"]}'
             return value
         return value
-
-
-# class IntegrationProjectPD(IntegrationPD):
-#     pass
-    # @validator("is_default")
-    # def validate_is_default(cls, value, values):
-    #     if rpc_tools.RpcMixin().rpc.call.integrations_is_default(values['project_id'], values):
-    #         return True
-    #     return False
 
 
 class IntegrationDefaultPD(BaseModel):
