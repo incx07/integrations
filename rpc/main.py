@@ -144,7 +144,7 @@ class RPC:
     
     @rpc('get_by_uid')
     def get_by_uid(
-            self, integration_uid: int, 
+            self, integration_uid: str, 
             project_id: Optional[int] = None,
             check_all_projects: bool = True
             ) -> Optional[IntegrationProject]:
@@ -154,7 +154,9 @@ class RPC:
         :param project_id: id of current project
         :param check_all_projects: True - if we want to search in all projects
         :return: integration ORM object or None
-        """   
+        """ 
+        if not isinstance(integration_uid, str):
+              integration_uid = str(integration_uid)
         if project_id is not None:
             with db.with_project_schema_session(project_id) as tenant_session:
                 if integration := tenant_session.query(IntegrationProject).filter(
